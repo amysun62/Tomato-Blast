@@ -1,0 +1,421 @@
+{
+ "catalog": {
+  "id": 549,
+  "config_ref": "pcpv:1014:1790868222",
+  "preset": {},
+  "sections": {
+   "shop_no_ads": {
+    "display_name_key": "shop/section/no_ads",
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "shop_free": {
+    "display_name_key": "shop/section/free",
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "shop_specials": {
+    "display_name_key": "shop/section/specials",
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "shop_bundles": {
+    "display_name_key": "shop/section/bundles",
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "shop_singles": {
+    "display_name_key": null,
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "default": {
+    "display_name_key": null,
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "inventory": {
+    "display_name_key": null,
+    "target": null,
+    "asset_key": null,
+    "items": [
+     {
+      "catalog_product_id": 13342,
+      "offer": {
+       "product_id": 1839,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "1e89df11-5eb4-44d6-b65f-945793639551",
+          "item_type": "ingame_booster_a",
+          "quantity": 3,
+          "payload": {
+           "id": 21702,
+           "type": "ingame_booster_a",
+           "attributes": {},
+           "reward_type": "ingame_booster_a"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 1500.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 1,
+       "column": 1
+      }
+     },
+     {
+      "catalog_product_id": 13344,
+      "offer": {
+       "product_id": 1838,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "eeb814d2-a2f7-48bf-b154-7b0f100f2dee",
+          "item_type": "ingame_booster_b",
+          "quantity": 3,
+          "payload": {
+           "id": 21703,
+           "type": "ingame_booster_b",
+           "attributes": {},
+           "reward_type": "ingame_booster_b"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 1000.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 3,
+       "column": 1
+      }
+     },
+     {
+      "catalog_product_id": 13468,
+      "offer": {
+       "product_id": 1871,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "4715c5c1-f996-413d-95af-3f75f59645a9",
+          "item_type": "ingame_booster_d",
+          "quantity": 3,
+          "payload": {
+           "id": 21757,
+           "type": "ingame_booster_d",
+           "attributes": {},
+           "reward_type": "ingame_booster_d"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 2000.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 5,
+       "column": 1
+      }
+     },
+     {
+      "catalog_product_id": 13470,
+      "offer": {
+       "product_id": 1873,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "a11dd7e3-957f-4a81-ac47-4d95a1ab02a1",
+          "item_type": "ingame_booster_c",
+          "quantity": 3,
+          "payload": {
+           "id": 21704,
+           "type": "ingame_booster_c",
+           "attributes": {},
+           "reward_type": "ingame_booster_c"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 750.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 7,
+       "column": 1
+      }
+     }
+    ]
+   },
+   "play_on": {
+    "display_name_key": null,
+    "target": null,
+    "asset_key": null,
+    "items": [
+     {
+      "catalog_product_id": 12419,
+      "offer": {
+       "product_id": 1796,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "4fec7431-12e9-4b00-a524-370fb6e8359c",
+          "item_type": "abstract",
+          "quantity": 1,
+          "payload": {
+           "id": 21701,
+           "type": "abstract",
+           "attributes": {},
+           "reward_type": "abstract"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 900.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 1,
+       "column": 1
+      }
+     },
+     {
+      "catalog_product_id": 12420,
+      "offer": {
+       "product_id": 1797,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "4fec7431-12e9-4b00-a524-370fb6e8359c",
+          "item_type": "abstract",
+          "quantity": 1,
+          "payload": {
+           "id": 21701,
+           "type": "abstract",
+           "attributes": {},
+           "reward_type": "abstract"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 1900.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 2,
+       "column": 1
+      }
+     },
+     {
+      "catalog_product_id": 12421,
+      "offer": {
+       "product_id": 1798,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "4fec7431-12e9-4b00-a524-370fb6e8359c",
+          "item_type": "abstract",
+          "quantity": 1,
+          "payload": {
+           "id": 21701,
+           "type": "abstract",
+           "attributes": {},
+           "reward_type": "abstract"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 2900.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 3,
+       "column": 1
+      }
+     },
+     {
+      "catalog_product_id": 12422,
+      "offer": {
+       "product_id": 1799,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "4fec7431-12e9-4b00-a524-370fb6e8359c",
+          "item_type": "abstract",
+          "quantity": 1,
+          "payload": {
+           "id": 21701,
+           "type": "abstract",
+           "attributes": {},
+           "reward_type": "abstract"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 2900.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 4,
+       "column": 1
+      }
+     },
+     {
+      "catalog_product_id": 12423,
+      "offer": {
+       "product_id": 1800,
+       "product_type": "game_product",
+       "product": {
+        "image_url": null,
+        "display_name_key": null,
+        "content": [
+         {
+          "uuid": "4fec7431-12e9-4b00-a524-370fb6e8359c",
+          "item_type": "abstract",
+          "quantity": 1,
+          "payload": {
+           "id": 21701,
+           "type": "abstract",
+           "attributes": {},
+           "reward_type": "abstract"
+          },
+          "backup": [],
+          "container_index": 0
+         }
+        ]
+       },
+       "price_type": "in_game_currency",
+       "price": {
+        "value": 2900.0
+       },
+       "label": "blank",
+       "label_key": null,
+       "source": "catalog"
+      },
+      "position": {
+       "row": 5,
+       "column": 1
+      }
+     }
+    ]
+   },
+   "offers": {
+    "display_name_key": null,
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "endless_offer_catalog": {
+    "display_name_key": "shop/endlessoffer/title",
+    "target": null,
+    "asset_key": null,
+    "items": []
+   },
+   "season_pass": {
+    "display_name_key": null,
+    "target": null,
+    "asset_key": null,
+    "items": []
+   }
+  }
+ },
+ "creatives": [],
+ "lasting_creatives": [],
+ "events": [],
+ "revoked_events": [],
+ "onboarding_events": [],
+ "tournaments": [],
+ "unconsumed_rewards": [],
+ "non_consumables": {
+  "store_ids": []
+ },
+ "time_limited_consumables": []
+}

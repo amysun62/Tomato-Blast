@@ -1,0 +1,62 @@
+{
+  "Game.Configs.CoinsForWinsConfig, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": false,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/CoinsForWinsConfig.asset",
+    "guid": "1284a28b03a3147e8bb70bc428dd4ee7",
+    "override_type": "scriptable_object"
+  },
+  "Game.Configs.GameEndFlow, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": false,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/GameEndFlowConfig.asset",
+    "guid": "270dcd34ad04b40c38f4b7cd82fc3c05",
+    "override_type": "scriptable_object"
+  },
+  "Game.Configs.LevelChestsConfig, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": false,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/LevelChestsConfig.asset",
+    "guid": "e5b581353665641639411fc04f078eed",
+    "override_type": "scriptable_object"
+  },
+  "Game.Configs.LivesConfig, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": false,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/LivesConfig.asset",
+    "guid": "1f02f09ace8e7472fa53d3928a20d722",
+    "override_type": "scriptable_object"
+  },
+  "Game.Configs.Mechanics, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": false,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/MechanicsConfig.asset",
+    "guid": "a0f9e4b2013364621bb06d2be648bf76",
+    "override_type": "scriptable_object"
+  },
+  "Game.MenuSequencesConfig, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": true,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/MenuSequencesConfig.asset",
+    "guid": "5a21c911203cb4d6f9d8e9ac181ae3f8",
+    "override_type": "scriptable_object"
+  },
+  "Game.PortraitSprites, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": true,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/PortraitSpritesScriptableObject.asset",
+    "guid": "71bc1fb975a9c42a18c27b4ff1541967",
+    "override_type": "scriptable_object"
+  },
+  "Game.Configs.SettingsConfig, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": true,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/SettingsConfig.asset",
+    "guid": "1e57e5bdd1b1c41ada8e354689cb1b96",
+    "override_type": "scriptable_object"
+  },
+  "Game.Configs.TutorialConfig, Game.Configs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": false,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/TutorialConfig.asset",
+    "guid": "28dea9fccd99e4a32bf10323b51127a5",
+    "override_type": "scriptable_object"
+  },
+  "Hades.Dda.DdaConfig, Hades.Dda, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {
+    "is_enabled": false,
+    "asset_path": "Assets/Game/Scripts/Runtime/Configs/LocalConfigs/Resources/DdaConfig.asset",
+    "guid": "5d643339a84cd4d9ca99ca12906d48cc",
+    "override_type": "scriptable_object"
+  }
+}

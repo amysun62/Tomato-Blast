@@ -1,0 +1,162 @@
+{
+    "events": [
+        {
+            "event_id": 113253,
+            "type_key": "seasonpass",
+            "event_configuration_id": 1338,
+            "start_at": 1767258000,
+            "end_at": 1798761540,
+            "duration": 31503540,
+            "onboarding": {
+                "type": "UnlockLevelOnboardingSchema",
+                "foreshadow_level": 1,
+                "unlock_level": 32,
+                "cooldown": 10
+            },
+            "activities": [
+                {
+                    "config_ref": "ecos:3035:1771600011_eo:113253:1771600029_ecv:1731:1771600011",
+                    "participation_window": null,
+                    "start_at": 1767258000,
+                    "end_at": 1798761540,
+                    "duration": 31503540,
+                    "type": "season_pass",
+                    "season_pass": {
+                        "id": 41,
+                        "schema_type": "default",
+                        "payload": {
+                            "type": "SeasonPassSchema",
+                            "tracks_info": [
+                                {
+                                    "milestones": [
+                                        {
+                                            "target": 1,
+                                            "rewards": [
+                                                {
+                                                    "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                                    "item_type": "coins",
+                                                    "quantity": 100,
+                                                    "payload": {
+                                                        "id": 864,
+                                                        "type": "coins",
+                                                        "attributes": {},
+                                                        "reward_type": "coins"
+                                                    },
+                                                    "backup": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "target": 3,
+                                            "rewards": [
+                                                {
+                                                    "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                                    "item_type": "coins",
+                                                    "quantity": 300,
+                                                    "payload": {
+                                                        "id": 864,
+                                                        "type": "coins",
+                                                        "attributes": {},
+                                                        "reward_type": "coins"
+                                                    },
+                                                    "backup": []
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "activation_method": {
+                                        "paid_premium_pass_support": false,
+                                        "add_friends_support": false
+                                    }
+                                },
+                                {
+                                    "milestones": [
+                                        {
+                                            "target": 1,
+                                            "rewards": [
+                                                {
+                                                    "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                                    "item_type": "coins",
+                                                    "quantity": 100,
+                                                    "payload": {
+                                                        "id": 864,
+                                                        "type": "coins",
+                                                        "attributes": {},
+                                                        "reward_type": "coins"
+                                                    },
+                                                    "backup": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "target": 3,
+                                            "rewards": [
+                                                {
+                                                    "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                                    "item_type": "coins",
+                                                    "quantity": 300,
+                                                    "payload": {
+                                                        "id": 864,
+                                                        "type": "coins",
+                                                        "attributes": {},
+                                                        "reward_type": "coins"
+                                                    },
+                                                    "backup": []
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "activation_method": {
+                                        "add_friends_support": false,
+                                        "paid_premium_pass_support": true,
+                                        "offer": {
+                                            "product_id": 1,
+                                            "product_type": "season_pass",
+                                            "product": {
+                                                "content": [
+                                                    {
+                                                        "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                                        "item_type": "coins",
+                                                        "quantity": 500,
+                                                        "payload": {
+                                                            "id": 864,
+                                                            "type": "coins",
+                                                            "attributes": {},
+                                                            "reward_type": "coins"
+                                                        },
+                                                        "backup": []
+                                                    }
+                                                ]
+                                            },
+                                            "price_type": "iap",
+                                            "price": {
+                                                "store_product_id": "com.example.seasonpass.premium",
+                                                "value": 4.99
+                                            },
+                                            "label": "Unlock Premium",
+                                            "label_key": "season_pass_unlock_premium",
+                                            "source": "source",
+                                            "intent_jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9kdWN0X2lkIjoxfQ.signature"
+                                        }
+                                    }
+                                }
+                            ],
+                            "badge_orientation": "left"
+                        }
+                    }
+                }
+            ],
+            "parameters": {
+                "payload": {}
+            }
+        }
+    ],
+    "test_access": true,
+    "debug": {
+        "segment_ids": [
+            869,
+            768
+        ],
+        "base_host_override": null
+    }
+}

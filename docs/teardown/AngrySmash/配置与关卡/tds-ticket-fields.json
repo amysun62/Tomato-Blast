@@ -1,0 +1,31 @@
+Display name,Type,Field ID,Date modified,Tags
+A/B Variant IDs,Text,15544424784412,2024-08-23,Custom field
+Assignee,Drop-down,14426935410076,2024-06-12,Standard field
+Category,Drop-down,15513671332252,2024-09-04,Custom field
+Current Level Hash,Text,15544460584732,2024-08-23,Custom field
+Description,Multi-line,14426940859804,2024-06-12,Standard field
+Device,Text,15512957349404,2024-08-21,Custom field
+Game Config ID,Text,15544462047900,2024-08-23,Custom field
+Group,Drop-down,14426940862492,2024-06-12,Standard field
+IDFA,Text,15512998062876,2024-08-21,Custom field
+IDFV,Text,15512935031580,2024-08-21,Custom field
+install_id,Text,17926786816156,2025-01-14,Custom field
+is_payer,Checkbox,15544454275612,2024-08-23,Custom field
+Language,Text,15512933613084,2024-08-21,Custom field
+Last Transaction Date,Text,15544450485148,2024-08-23,Custom field
+Last Transaction Price,Text,15544502045724,2024-08-23,Custom field
+OS,Text,15512989488028,2024-08-21,Custom field
+Priority,Drop-down,14426935407900,2024-06-12,Standard field
+Region,Text,15512955013660,2024-08-21,Custom field
+Screen,Text,15513007818780,2024-08-21,Custom field
+Seed,Numeric,15513240923164,2024-08-21,Custom field
+Status,Drop-down,15514028247964,2024-08-21,Custom field
+Stylo Assist Actions Taken,Multi-select,18587213726620,2025-02-19,Custom field
+Subject,Text,14426935404316,2024-06-12,Standard field
+Ticket status,Drop-down,14426935406876,2024-06-12,Standard field
+TimeZone,Text,15513010405020,2024-08-21,Custom field
+Topic,Drop-down,14426958530460,2024-06-12,Custom field
+Total Transaction Value,Text,15544478699036,2024-08-23,Custom field
+Type,Drop-down,14426935407132,2024-06-12,Standard field
+User,Text,15513013299356,2024-08-21,Custom field
+Version,Text,15513238413980,2024-08-21,Custom field

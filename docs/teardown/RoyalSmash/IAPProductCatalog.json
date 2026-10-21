@@ -1,0 +1,1427 @@
+{
+  "appleSKU": "",
+  "appleTeamID": "",
+  "enableCodelessAutoInitialization": true,
+  "enableUnityGamingServicesAutoInitialization": false,
+  "products": [
+    {
+      "id": "com.cyphergames.royalsmash.goldoffer1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Gold Offer 1",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 2,
+      "googlePrice": {
+        "data": [
+          199,
+          0,
+          0,
+          131072
+        ],
+        "num": 1.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.goldoffer2",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Gold Offer 2",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 8,
+      "googlePrice": {
+        "data": [
+          799,
+          0,
+          0,
+          131072
+        ],
+        "num": 7.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.goldoffer3",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Gold Offer 3",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 15,
+      "googlePrice": {
+        "data": [
+          1499,
+          0,
+          0,
+          131072
+        ],
+        "num": 14.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.goldoffer4",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Gold Offer 4",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 30,
+      "googlePrice": {
+        "data": [
+          2999,
+          0,
+          0,
+          131072
+        ],
+        "num": 29.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.goldoffer5",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Gold Offer 5",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 51,
+      "googlePrice": {
+        "data": [
+          5499,
+          0,
+          0,
+          131072
+        ],
+        "num": 54.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.goldoffer6",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Gold Offer 6",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 60,
+      "googlePrice": {
+        "data": [
+          9999,
+          0,
+          0,
+          131072
+        ],
+        "num": 99.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.removeads",
+      "type": 1,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 8,
+      "googlePrice": {
+        "data": [
+          799,
+          0,
+          0,
+          131072
+        ],
+        "num": 7.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.specialoffer1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 1,
+      "googlePrice": {
+        "data": [
+          99,
+          0,
+          0,
+          131072
+        ],
+        "num": 0.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.levelendoffer1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.levelendoffer2",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.levelendoffer3",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.progressoffer",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.progressoffer1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 4,
+      "googlePrice": {
+        "data": [
+          399,
+          0,
+          0,
+          131072
+        ],
+        "num": 3.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo0",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 0",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 1,
+      "googlePrice": {
+        "data": [
+          99,
+          0,
+          0,
+          131072
+        ],
+        "num": 0.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 1",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 2,
+      "googlePrice": {
+        "data": [
+          199,
+          0,
+          0,
+          131072
+        ],
+        "num": 1.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo2",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 2",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo3",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 3",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 4,
+      "googlePrice": {
+        "data": [
+          399,
+          0,
+          0,
+          131072
+        ],
+        "num": 3.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo4",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 4",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 5,
+      "googlePrice": {
+        "data": [
+          499,
+          0,
+          0,
+          131072
+        ],
+        "num": 4.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo5",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 5",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 6,
+      "googlePrice": {
+        "data": [
+          599,
+          0,
+          0,
+          131072
+        ],
+        "num": 5.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo6",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 6",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 7,
+      "googlePrice": {
+        "data": [
+          699,
+          0,
+          0,
+          131072
+        ],
+        "num": 6.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo7",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 7",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 8,
+      "googlePrice": {
+        "data": [
+          799,
+          0,
+          0,
+          131072
+        ],
+        "num": 7.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo8",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 8",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 9,
+      "googlePrice": {
+        "data": [
+          899,
+          0,
+          0,
+          131072
+        ],
+        "num": 8.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo9",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 9",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 10,
+      "googlePrice": {
+        "data": [
+          999,
+          0,
+          0,
+          131072
+        ],
+        "num": 9.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo10",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 10",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 12,
+      "googlePrice": {
+        "data": [
+          1199,
+          0,
+          0,
+          131072
+        ],
+        "num": 11.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo11",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 11",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 15,
+      "googlePrice": {
+        "data": [
+          1499,
+          0,
+          0,
+          131072
+        ],
+        "num": 14.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo12",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 12",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 18,
+      "googlePrice": {
+        "data": [
+          1799,
+          0,
+          0,
+          131072
+        ],
+        "num": 17.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.pushthetempo13",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Push the Tempo Spin 13",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 20,
+      "googlePrice": {
+        "data": [
+          1999,
+          0,
+          0,
+          131072
+        ],
+        "num": 19.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.royalchoice1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Royal Choice Package 1",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 2,
+      "googlePrice": {
+        "data": [
+          199,
+          0,
+          0,
+          131072
+        ],
+        "num": 1.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.royalchoice2",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Royal Choice Package 2",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.royalchoice3",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Royal Choice Package 3",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 5,
+      "googlePrice": {
+        "data": [
+          499,
+          0,
+          0,
+          131072
+        ],
+        "num": 4.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.royalchoiceall",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Royal Choice Buy All",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 8,
+      "googlePrice": {
+        "data": [
+          799,
+          0,
+          0,
+          131072
+        ],
+        "num": 7.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.spookytreats1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Dynamic Royal Choice Package 1",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 4,
+      "googlePrice": {
+        "data": [
+          399,
+          0,
+          0,
+          131072
+        ],
+        "num": 3.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.spookytreats2",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Dynamic Royal Choice Package 2",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 6,
+      "googlePrice": {
+        "data": [
+          599,
+          0,
+          0,
+          131072
+        ],
+        "num": 5.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.spookytreats3",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Dynamic Royal Choice Package 3",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 10,
+      "googlePrice": {
+        "data": [
+          999,
+          0,
+          0,
+          131072
+        ],
+        "num": 9.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.spookytreatsall",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Dynamic Royal Choice Buy All",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 16,
+      "googlePrice": {
+        "data": [
+          1599,
+          0,
+          0,
+          131072
+        ],
+        "num": 15.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.sundayoffer1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Sunday Offer Package 1",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.sundayoffer2",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Sunday Offer Package 2",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 5,
+      "googlePrice": {
+        "data": [
+          499,
+          0,
+          0,
+          131072
+        ],
+        "num": 4.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.sundayoffer3",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Sunday Offer Package 3",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 8,
+      "googlePrice": {
+        "data": [
+          799,
+          0,
+          0,
+          131072
+        ],
+        "num": 7.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.sundayofferall",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Sunday Offer Buy All",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 13,
+      "googlePrice": {
+        "data": [
+          1299,
+          0,
+          0,
+          131072
+        ],
+        "num": 12.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.fridayoffer1",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Friday Offer Package 1",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 2,
+      "googlePrice": {
+        "data": [
+          199,
+          0,
+          0,
+          131072
+        ],
+        "num": 1.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.fridayoffer2",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Friday Offer Package 2",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 3,
+      "googlePrice": {
+        "data": [
+          299,
+          0,
+          0,
+          131072
+        ],
+        "num": 2.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.fridayoffer3",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Friday Offer Package 3",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 5,
+      "googlePrice": {
+        "data": [
+          499,
+          0,
+          0,
+          131072
+        ],
+        "num": 4.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    },
+    {
+      "id": "com.cyphergames.royalsmash.fridayofferall",
+      "type": 0,
+      "storeIDs": [],
+      "defaultDescription": {
+        "googleLocale": 4,
+        "title": "Friday Offer Buy All",
+        "description": ""
+      },
+      "screenshotPath": "",
+      "applePriceTier": 8,
+      "googlePrice": {
+        "data": [
+          799,
+          0,
+          0,
+          131072
+        ],
+        "num": 7.99
+      },
+      "pricingTemplateID": "",
+      "descriptions": [],
+      "udpPrice": {
+        "data": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "num": 0.0
+      },
+      "payouts": []
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+    "events": [
+        {
+            "event_id": 2,
+            "type_key": "win_streak",
+            "event_configuration_id": 966,
+            "start_at": 1735722000,
+            "end_at": 1793454993,
+            "activities": [
+                {
+                    "config_ref": "ecos:2395:1752144860_eo:61960:1751620084_ecv:1268:1752144860",
+                    "participation_window": null,
+                    "start_at": 1735722000,
+                    "end_at": null,
+                    "type": "flexible",
+                    "flexible": {
+                        "id": 9,
+                        "schema_type": "default",
+                        "payload": {
+                            "type": "WinStreakSchema",
+                            "badge_orientation": "left",
+                            "loss_strategy": "reset_relative_to_max_achieved_milestone",
+                            "wins_required": 3,
+                            "extra_balls": 3,
+                            "milestones": [
+                                {
+                                    "target": "2",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 100,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "target": "4",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 200,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "target": "6",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 300,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "target": "8",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 400,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "target": "10",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 500,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "target": "12",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 600,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "target": "14",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 700,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "target": "16",
+                                    "rewards": [
+                                        {
+                                            "uuid": "8a324802-0598-45ab-a879-89fe3aa46d68",
+                                            "item_type": "coins",
+                                            "quantity": 800,
+                                            "payload": {
+                                                "id": 864,
+                                                "type": "coins",
+                                                "attributes": {},
+                                                "reward_type": "coins"
+                                            },
+                                            "backup": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "parameters": {
+                "payload": {
+                    "dev_test_parsing_string": "default"
+                }
+            }
+        }
+    ],
+    "test_access": true,
+    "debug": {
+        "segment_ids": [],
+        "base_host_override": null
+    }
+}

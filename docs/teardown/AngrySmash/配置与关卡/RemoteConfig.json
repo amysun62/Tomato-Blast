@@ -1,0 +1,351 @@
+{
+ "liveops_attributes": {
+  "ab_variant_ids": []
+ },
+ "configs": {
+  "localizations": {
+   "url": "https://localisations-server-production-cdn.tripledotapi.com/api/v1/localisations?app_id=88&timestamp=1790781090&type=live"
+  },
+  "adjust_config": {
+   "url": "https://gs-prd-web-cdn.tripledotapi.com/api/v4/adjust_config?application_id=171&id%5B%5D=3400&id%5B%5D=3399&id%5B%5D=3398&id%5B%5D=3397&id%5B%5D=3396&id%5B%5D=3395&id%5B%5D=3394&id%5B%5D=3393&id%5B%5D=3392&id%5B%5D=3391&id%5B%5D=3390&id%5B%5D=3389&id%5B%5D=3388&id%5B%5D=3387&id%5B%5D=3386&id%5B%5D=3385&id%5B%5D=3384&id%5B%5D=3383&id%5B%5D=3382&id%5B%5D=3381&id%5B%5D=3380&id%5B%5D=3379&id%5B%5D=3378&id%5B%5D=3377&id%5B%5D=3376&id%5B%5D=3375&id%5B%5D=3374&id%5B%5D=3373&id%5B%5D=3372&id%5B%5D=3371&id%5B%5D=3370&id%5B%5D=3369&id%5B%5D=3368&id%5B%5D=3367&id%5B%5D=3366&id%5B%5D=3365&id%5B%5D=3364&id%5B%5D=3363&id%5B%5D=3362&id%5B%5D=3361&id%5B%5D=3360&id%5B%5D=3359&id%5B%5D=3358&id%5B%5D=3357&id%5B%5D=3356&id%5B%5D=3355&id%5B%5D=3258&id%5B%5D=3257&id%5B%5D=3255&id%5B%5D=3254&id%5B%5D=3253&id%5B%5D=3252&id%5B%5D=3251&id%5B%5D=3250&id%5B%5D=3249&id%5B%5D=3248&id%5B%5D=3247&id%5B%5D=3246&timestamp=103614750257"
+  },
+  "chapter_set": {
+   "url": "https://gs-prd-web-cdn.tripledotapi.com/api/v3/metagame/chapter_based/chapter_sets/manifests?id=121&namespace=Concord%3A%3AChapterSets&timestamp=1791454304.gz",
+   "manifest_url": "https://gs-prd-web-cdn.tripledotapi.com/api/v3/metagame/chapter_based/chapter_sets/manifests?id=121&namespace=Concord%3A%3AChapterSets&timestamp=1791454304.gz"
+  }
+ },
+ "ios_idfa_native_popup_enabled": true,
+ "popups": {
+  "order": [
+   "Google_CMP",
+   "IDFA",
+   "Allow_Notifications",
+   "PushNotifications_Retry_OptIn",
+   "Rate_Us"
+  ],
+  "triggers": {
+   "IDFA": {
+    "conditions": [
+     {
+      "app_starts": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15,
+       16,
+       17,
+       18,
+       19,
+       20,
+       25,
+       30,
+       35,
+       40,
+       45,
+       50
+      ],
+      "game_starts": [
+       0,
+       1,
+       2,
+       3
+      ]
+     }
+    ]
+   },
+   "Google_CMP": {
+    "conditions": [
+     {
+      "app_starts": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15,
+       16,
+       17,
+       18,
+       19,
+       20,
+       25,
+       30,
+       35,
+       40,
+       45,
+       50
+      ],
+      "game_starts": [
+       0,
+       1,
+       2,
+       3
+      ]
+     }
+    ]
+   }
+  },
+  "settings": {
+   "idfa": {
+    "suppress_after_gdpr_decline": true
+   }
+  }
+ },
+ "client_ad_revenue_timeframe": 168.0,
+ "client_ad_revenue_threshold": 0.15,
+ "analytics_batching_delay": 3000,
+ "analytics_batching_startup_duration": 20000,
+ "analytics_batching_delay_startup": 1000,
+ "hades_ads": {
+  "banners": {
+   "unlock_level": 20
+  }
+ },
+ "ccrtcumulative_thresholds": [
+  1.0
+ ],
+ "boosters": {
+  "big_ball": {
+   "type": "big_ball",
+   "unlock_level": 23,
+   "initial_inventory": 3,
+   "enable_tutorial": true,
+   "max_rv_boosters": 3
+  },
+  "gatling_gun": {
+   "type": "gatling_gun",
+   "unlock_level": 17,
+   "initial_inventory": 3,
+   "enable_tutorial": true,
+   "max_rv_boosters": 3,
+   "duration_seconds": 3.0,
+   "shot_cooldown": 0.2
+  },
+  "max_rv_boosters": 3,
+  "piercing_rocket": {
+   "type": "piercing_rocket",
+   "unlock_level": 13,
+   "initial_inventory": 3,
+   "enable_tutorial": true,
+   "max_rv_boosters": 3,
+   "max_travel_distance": 40.0,
+   "lifetime_seconds": 10.0
+  },
+  "three_balls": {
+   "type": "three_balls",
+   "unlock_level": 9,
+   "initial_inventory": 3,
+   "enable_tutorial": true,
+   "max_rv_boosters": 3,
+   "shots_amount": 3,
+   "shot_angle": 8
+  }
+ },
+ "chapter_set_id": 121,
+ "coins_for_wins": {
+  "schema": [
+   {
+    "from": 1,
+    "to": -1,
+    "reward": [
+     {
+      "id": 21698,
+      "reward_type": "coins",
+      "attributes": {},
+      "type": "coins",
+      "quantity": 40,
+      "amount": 40
+     }
+    ]
+   }
+  ]
+ },
+ "dda": {
+  "enabled": true,
+  "unlock_at_level": 30,
+  "harder_steps": [
+   {
+    "score": 5,
+    "ball_change_pct": -9
+   },
+   {
+    "score": 8,
+    "ball_change_pct": -16
+   },
+   {
+    "score": 10,
+    "ball_change_pct": -24
+   },
+   {
+    "score": 12,
+    "ball_change_pct": -30
+   },
+   {
+    "score": 14,
+    "ball_change_pct": -36
+   },
+   {
+    "score": 16,
+    "ball_change_pct": -42
+   }
+  ],
+  "help_steps": [
+   {
+    "score": -4,
+    "ball_change": 2
+   },
+   {
+    "score": -8,
+    "ball_change": 2
+   },
+   {
+    "score": -12,
+    "ball_change": 3
+   },
+   {
+    "score": -20,
+    "ball_change": 10
+   },
+   {
+    "score": -24,
+    "ball_change": 15
+   }
+  ],
+  "score_clamp": [
+   -30,
+   20
+  ],
+  "scoring": {
+   "clean_win": 1,
+   "loss": -7,
+   "rv_penalty": 2,
+   "coin_penalty": 5
+  },
+  "apply_difficulty": [
+   2,
+   3
+  ]
+ },
+ "game_end_flow": {
+  "enable_try_again": true,
+  "play_on": {
+   "price_coins": 900.0,
+   "price_increment": 1.0
+  },
+  "reward_multiplier": {
+   "enabled": false
+  }
+ },
+ "combo_meter": {
+  "enabled": false,
+  "unlock_level": 5,
+  "stage1_threshold": 0,
+  "stage2_threshold": 25,
+  "reset_timeout": 3,
+  "reset_mode": "timeout"
+ },
+ "gameplay": {
+  "item_destroy_delay": 0.25,
+  "projectile_destroy_delay": 1,
+  "projectile_fade_duration": 0.5,
+  "item_settled_linear_velocity_sqr_epsilon": 0.01,
+  "item_settled_angular_velocity_sqr_epsilon": 0.01,
+  "physics": "v2"
+ },
+ "levels_flow": {
+  "loop_chapter_set_from": 31,
+  "loop_chapter_set_to": -1,
+  "difficulty_sequence": [
+   1,
+   1,
+   2,
+   1,
+   1,
+   1,
+   3
+  ],
+  "force_play_on_win_until": 24,
+  "force_play_on_start_until": 24
+ },
+ "lives": {
+  "lives_max_revivable_number": 5,
+  "lives_max_allowed_number": 5,
+  "onboarding_infinite_lives_duration": 300,
+  "price_coins": 900,
+  "regeneration_time": 1800,
+  "enable_rewarded_purchase": true,
+  "amount_for_rewarded": 2
+ },
+ "endless_offer": {
+  "loop": 2
+ },
+ "offers": {
+  "no_ads": {
+   "enabled": true,
+   "triggers": {
+    "level_passed": 25,
+    "level_passed_recurrent": 20,
+    "interstitials_seen_total": 4,
+    "interstitials_seen_today": 2
+   }
+  },
+  "starter_pack": {
+   "enabled": true,
+   "catalog_product_id": 1903,
+   "duration": "02:00:00",
+   "triggers": {
+    "level_passed": 27,
+    "level_passed_recurrent": 30,
+    "interstitials_seen_total": -1,
+    "interstitials_seen_today": -1
+   }
+  }
+ },
+ "play_on_extra_parameters": {
+  "moves_for_coins": 5,
+  "moves_for_rv": 2,
+  "max_rv_play_ons": -1
+ },
+ "rate_us_config": {
+  "show_animation_delay": 0.0,
+  "min_stars_to_redirect": 5,
+  "enabled": true,
+  "min_levels_completed": 5,
+  "retry_after_levels": 10,
+  "retry_cooldown": 1,
+  "retries": 3
+ },
+ "telemetry": {
+  "activation_rate": 1.0,
+  "enabled": true,
+  "enabled_metrics": [
+   "FirstLoadTime",
+   "SubsequentLoadTime",
+   "FrameStability",
+   "FrameStabilityAverage",
+   "RuntimeMemory",
+   "ResumeTime"
+  ],
+  "low_end_devices_enabled": true
+ }
+}

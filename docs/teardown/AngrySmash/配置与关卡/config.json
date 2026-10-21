@@ -1,0 +1,18 @@
+{
+    "id": 837,
+    "levels": [
+        {
+            "from": 1,
+            "to": 50,
+            "sha256": "3467a1254cf2720949ac961f42a6182dc7d990616d26deebd7086b47187b494c",
+            "file": "resources://TestLevels/test_levels/levelPack_3467a1254cf2720949ac961f42a6182dc7d990616d26deebd7086b47187b494c"
+        }
+    ],
+    "chapters": [
+        {
+            "id": 5555,
+            "name": "Chapter 1",
+            "levels_number": 50
+        }
+    ]
+}

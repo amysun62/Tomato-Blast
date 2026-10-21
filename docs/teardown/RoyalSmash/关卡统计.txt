@@ -1,0 +1,19 @@
+== ROYAL: 关卡版本数 2380
+区间 | 版本数 | 步数中位 | 物件数中位 | 难度分布(无字段=普通?)
+1-10 | 20 | 23.0 | 70.5 | {'-': 17, 1: 2, 2: 1}
+11-30 | 40 | 23.0 | 76.5 | {'-': 30, 1: 7, 2: 3}
+31-60 | 60 | 22.0 | 88.0 | {'-': 42, 1: 12, 2: 6}
+61-100 | 80 | 21.0 | 84.0 | {'-': 56, 1: 16, 2: 8}
+101-200 | 200 | 22.0 | 89.0 | {'-': 140, 1: 40, 2: 20}
+201-400 | 400 | 22.0 | 86.0 | {'-': 280, 1: 80, 2: 40}
+401-700 | 600 | 22.0 | 88.0 | {'-': 420, 1: 120, 2: 60}
+701-1000 | 600 | 25.0 | 77.0 | {'-': 420, 1: 120, 2: 60}
+1001-1270 | 380 | 25.0 | 75.5 | {'-': 266, 1: 76, 2: 38}
+Difficulty总分布 Counter({'-': 1671, 1: 473, 2: 236})
+步数/物件 比 中位 0.282
+== 元素首次出现关卡
+[('Table_Rect', 1), ('JamJarYellow', 1), ('IceSquare', 1), ('IceCylinder', 1), ('BouncerCylinder', 1), ('ColorBoxSquareGreen', 1), ('ColorBoxSquareRed', 1), ('CanCylinder', 1), ('ColorBoxSquareBlue', 2), ('ColorBoxSquareBlack', 2), ('ColorBoxSquareYellow', 2), ('ColorBoxSquareWhite', 2), ('CanSquare', 3), ('CanCone', 3), ('JamJarPurple', 3), ('ColorBoxSquareOrange', 4), ('ColorBoxSquarePurple', 4), ('BoxCylinder', 4), ('BoxSquare', 4), ('JamJarPink', 4), ('ColorBoxSquarePink', 5), ('Table_Round', 5), ('WoodSquare', 5), ('TntSquare', 5), ('Pinata', 5), ('StoneSquare', 6), ('JamJarRed', 8), ('ColumnSquare', 9), ('JamJarBlue', 9), ('StoneCylinder', 10), ('JamJarOrange', 10), ('JamJarGreen', 11), ('ColumnCylinder', 14), ('Blocker_L', 26), ('WoodCylinder', 32), ('TntCylinder', 37), ('Hammer', 42), ('Blocker_M', 57), ('Blocker_S', 117), ('PiggyBox', 121), ('Pumpkin', 181), ('Table_Wagon', 185), ('Table_Boat', 227), ('Can2Cone', 712)]
+== 前80关难度标记: [(4, 1), (7, 1), (10, 2), (14, 1), (17, 1), (20, 2), (20, 1), (24, 1), (24, 1), (27, 1), (27, 1), (30, 2), (30, 2), (34, 1), (34, 1), (37, 1), (37, 1), (40, 2), (40, 2), (44, 1), (44, 1), (47, 1), (47, 1), (50, 2), (50, 2), (54, 1), (54, 1), (57, 1), (57, 1), (60, 2), (60, 2), (64, 1), (64, 1), (67, 1), (67, 1), (70, 2), (70, 2), (74, 1), (74, 1), (77, 1), (77, 1), (80, 2), (80, 2)]
+Custom字段 Counter({'randomYaw': 214943, 'w': 3570, 'd': 3570, 'physicsMass': 2527, 'physicsDynamicFriction': 2527, 'physicsStaticFriction': 2527, 'physicsBounciness': 2527, 'physicsLinearDamping': 2527, 'physicsAngularDamping': 2527, 'physicsAnalyticInertia': 2527, 'startup': 1000, 'rotSpeed': 689, 'rotate': 555, 'rotAxis': 555, 'easeTime': 485, 'moveY': 229, 'cycleDur': 228, 'rodLength': 228, 'twoHeads': 228, 'curve': 228, 'moveX': 210, 'pinataScale': 141, 'pinataExplosionForce': 141, 'pinataExplosionRadius': 141, 'pinataExplosionUpwards': 141, 'pinataKillBlastForce': 141, 'pinataKillBlastRadius': 141, 'pinataKillBlastUpwards': 141, 'bladeScale': 124, 'hammer1Scale': 73, 'physicsColliderScale': 64, 'moveZ': 46, 'rodDiameter': 38, 'startPhase': 27, 'travel': 26, 'travelDur': 26, 'hammer2Scale': 12, 'rotStartPhase': 6})
+Arena/PhysicsQuality样例 [(14, 2, None), (20, 3, None), (17, 2, None), (7, 2, None), (10, 3, None), (4, 2, None)]
+BackgroundIndex [(-1, 2379), (1, 1)]
