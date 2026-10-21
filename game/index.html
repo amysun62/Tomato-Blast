@@ -1,59 +1,71 @@
 <!doctype html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Tomato Blast</title>
+<link rel="icon" href="assets/ui/icon_tomato.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
 <style>
-  /* 排版规范：UI 底板全部是 Yoroll 生成的图片；文字只放在底板预留的空位里，绝不压边框；
-     屏幕分三块安全区——顶部信息区 / 中间游戏区 / 底部道具栏，互不重叠（游戏区尺寸由 JS 读取 CSS 变量计算） */
+  /* UI 风格：制作人选定的「4 白色糖果」（美术方向/UI风格/mock_candy.png）。
+     所有底板都是 Yoroll 按效果图生成的图片；文字只放进底板实测的空位里（assets/ui/candy_slots.json），绝不压边框。
+     屏幕三块安全区：顶部 HUD / 中间游戏区 / 底部道具栏，互不重叠（游戏区尺寸由 JS 读取 CSS 变量计算） */
   :root {
-    --hud-h: 132px;
-    --bar-h: 118px;
-    --ink: #4a1a10;
+    --hud-h: 122px;
+    --bar-h: 122px;
+    --ink: #5a2a12;        /* 数字：深巧克力棕，压在奶油底上对比最强 */
+    --label: #b2683a;      /* 小标签：焦糖色 */
     --stroke: #8e150c;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #2a1a14; color: #fff;
-    font-family: "Lilita One", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; user-select: none; }
+    font-family: "Lilita One", "PingFang SC", sans-serif; user-select: none; }
   #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   img { display: block; pointer-events: none; -webkit-user-drag: none; }
-  .stroke { color: #fff; text-shadow: 0 2px 0 var(--stroke), 0 -1px 0 var(--stroke), 1.5px 0 0 var(--stroke), -1.5px 0 0 var(--stroke), 0 4px 6px rgba(0,0,0,.35); }
+  button { font-family: inherit; }
+  .stroke { color: #fff; text-shadow: 0 2px 0 var(--stroke), 0 -1px 0 var(--stroke), 1.5px 0 0 var(--stroke), -1.5px 0 0 var(--stroke), 0 4px 6px rgba(0,0,0,.3); }
 
-  /* ---------- 顶部信息区 ---------- */
-  #hud { position: fixed; left: 0; right: 0; top: 0; height: calc(var(--hud-h) + env(safe-area-inset-top)); padding-top: calc(env(safe-area-inset-top) + 8px);
-    display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
-  #banner { position: relative; width: min(92vw, 380px); aspect-ratio: 640 / 159; }
-  #banner > img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  /* 左侧奶油圆徽章的空位：关卡号 */
-  #lvlSlot { position: absolute; left: 3.2%; top: 14%; width: 17.6%; height: 72%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--ink); line-height: .9; }
-  #lvlSlot small { font-size: clamp(8px, 2.3vw, 10px); letter-spacing: .5px; opacity: .8; }
-  #lvlSlot b { font-size: clamp(18px, 6vw, 26px); }
-  /* 缎带中段的空位：番茄弹药 + 难度标签（左右分开，互不重叠） */
-  #ribbonSlot { position: absolute; left: 25%; right: 9%; top: 18%; bottom: 26%; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  #ammo { display: flex; align-items: center; gap: 4px; font-size: clamp(20px, 6.4vw, 28px); }
-  #ammo img { height: 1.25em; }
-  #tag { position: relative; height: 82%; aspect-ratio: 640 / 164; display: none; }
+  /* ---------- 顶部 HUD：c_hud 奶油胶囊（900×219） ---------- */
+  #hud { position: fixed; left: 0; right: 0; top: 0; padding-top: calc(env(safe-area-inset-top) + 28px);
+    display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+  #banner { position: relative; width: min(94vw, 420px); aspect-ratio: 900 / 219; filter: drop-shadow(0 5px 10px rgba(70,30,10,.28)); }
+  #banner > img.bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cell { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--ink); line-height: 1; }
+  .cell small { font-size: clamp(7px, 2.2vw, 10px); letter-spacing: .8px; color: var(--label); margin-bottom: 2px; }
+  .cell .row { display: flex; align-items: center; gap: 3px; }
+  .cell b { text-shadow: 0 1px 0 rgba(255,255,255,.9); }
+  /* 左格 [3.5, 12.5, 23, 88]：关卡号；红飘带骑在左格上沿 */
+  #lvlCell { left: 3.5%; top: 26%; width: 19.5%; height: 62%; }
+  #lvlCell b { font-size: clamp(17px, 6vw, 26px); }
+  #ribbon { position: absolute; left: 1.5%; top: -24%; width: 23.5%; aspect-ratio: 900 / 288; }
+  #ribbon img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #ribbon span { position: absolute; inset: 0 18%; display: flex; align-items: center; justify-content: center; font-size: clamp(8px, 2.5vw, 11px); letter-spacing: .5px; padding-bottom: 4%; }
+  /* 中格 [25.7, 12.5, 58.5, 88.5]：番茄弹药 */
+  #ammoCell { left: 25.7%; top: 14%; width: 32.8%; height: 72%; }
+  #ammoCell img { height: clamp(18px, 6vw, 26px); }
+  #ammoCell i { font-style: normal; font-size: clamp(11px, 3.4vw, 14px); color: var(--label); }
+  #ammoCell b { font-size: clamp(18px, 6.2vw, 27px); }
+  /* 右格 [60.3, 12.5, 85.7, 88.5]：目标（桌上还剩几个） */
+  #goalCell { left: 60.3%; top: 14%; width: 25.4%; height: 72%; }
+  #goalCell img { height: clamp(16px, 5.4vw, 23px); }
+  #goalCell b { font-size: clamp(16px, 5.6vw, 24px); }
+  #goalCell em { font-style: normal; font-size: clamp(7px, 2vw, 9px); color: var(--label); letter-spacing: .5px; align-self: flex-end; margin-bottom: 2px; }
+  /* 齿轮凹位 [88, 29, 97.6, 70.5] */
+  #gear { position: absolute; left: 87.3%; top: 22%; width: 11%; aspect-ratio: 487 / 512; border: 0; padding: 0; background: none; pointer-events: auto; cursor: pointer; }
+  #gear img { width: 100%; height: 100%; }
+  #gear:active { transform: scale(.9); }
+  /* 难度标签：只在难关出现，居中挂在 HUD 下方 */
+  #tag { position: relative; width: min(30vw, 124px); aspect-ratio: 512 / 98; margin-top: 4px; display: none; }
   #tag.on { display: block; }
   #tag img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  #tag span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(11px, 3.4vw, 15px); font-family: "PingFang SC", sans-serif; font-weight: 800; }
-  #chapter { font-size: 13px; font-family: "PingFang SC", sans-serif; font-weight: 800; letter-spacing: 1px; }
-  /* 进度条：数字放在条的右边，不压在条上 */
-  #progress { display: flex; align-items: center; gap: 8px; }
-  #barBox { position: relative; width: min(56vw, 230px); aspect-ratio: 640 / 79; }
-  #barBox > img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  #barClip { position: absolute; left: 4%; right: 4%; top: 22%; bottom: 22%; overflow: hidden; border-radius: 99px; }
-  #barFill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; transition: width .3s; }
-  #barFill img { height: 100%; width: 100%; object-fit: fill; }
-  #left { font-size: 15px; min-width: 52px; }
+  #tag span { position: absolute; inset: 0 12%; display: flex; align-items: center; justify-content: center; font-size: clamp(10px, 3vw, 13px); letter-spacing: 1px; }
 
-  #toast { position: fixed; left: 50%; top: calc(var(--hud-h) + 40px); transform: translateX(-50%) scale(.6); opacity: 0; pointer-events: none;
-    font-size: 28px; white-space: nowrap; transition: all .35s cubic-bezier(.2,1.6,.4,1); }
+  #toast { position: fixed; left: 50%; top: calc(var(--hud-h) + 44px); transform: translateX(-50%) scale(.6); opacity: 0; pointer-events: none;
+    font-size: 26px; white-space: nowrap; transition: all .35s cubic-bezier(.2,1.6,.4,1); }
   #toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
 
-  /* 连击大字：图片 + 倍数 */
+  /* 连击大字：倍数 + 生成的大字图 */
   #combo { position: fixed; left: 50%; top: 36%; width: min(70vw, 300px); transform: translate(-50%, -50%) scale(.4); opacity: 0; pointer-events: none; text-align: center; }
   #combo b { display: block; font-size: 54px; line-height: 1; margin-bottom: 2px; }
   #combo img { width: 100%; }
@@ -66,100 +78,114 @@
     100% { opacity: 0; transform: translate(-50%, -70%) scale(.92); }
   }
 
-  /* ---------- 底部道具栏（右侧一排，文字在按钮下方） ---------- */
-  #bar { position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--bar-h) + env(safe-area-inset-bottom)); padding: 0 14px calc(env(safe-area-inset-bottom) + 10px);
-    display: flex; justify-content: flex-end; align-items: flex-end; gap: 12px; pointer-events: none; }
-  .boost { pointer-events: auto; position: relative; width: 70px; display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
-  .boost .btn { position: relative; width: 70px; height: 70px; transition: transform .12s; }
+  /* ---------- 底部道具栏：白色气泡 c_bubble + 绿色角标 c_badge，整排居中等距 ---------- */
+  #bar { position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--bar-h) + env(safe-area-inset-bottom)); padding: 0 14px calc(env(safe-area-inset-bottom) + 12px);
+    display: flex; justify-content: center; align-items: flex-end; gap: clamp(18px, 7vw, 40px); pointer-events: none; }
+  .boost { pointer-events: auto; position: relative; width: 74px; display: flex; flex-direction: column; align-items: center; gap: 5px; background: none; border: 0; padding: 0; cursor: pointer; }
+  .boost .btn { position: relative; width: 74px; aspect-ratio: 488 / 512; transition: transform .12s; filter: drop-shadow(0 5px 8px rgba(70,30,10,.3)); }
   .boost .btn > img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .boost .btn .icon { position: absolute; inset: 20%; width: 60%; height: 60%; }
-  .boost .cnt { position: absolute; right: -6px; top: -6px; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 13px; background: #fff7e8; color: var(--stroke);
-    font-size: 15px; line-height: 22px; border: 2px solid var(--stroke); text-align: center; }
-  .boost em { font-style: normal; font-size: 12px; font-family: "PingFang SC", sans-serif; font-weight: 800; }
+  .boost .btn .icon { position: absolute; left: 17%; top: 17%; width: 66%; height: 66%; object-fit: contain; }
+  .boost .cnt { position: absolute; right: -4px; bottom: -2px; width: 30px; height: 30px; }
+  .boost .cnt img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .boost .cnt span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff; text-shadow: 0 1px 0 #2f6b12; }
+  .boost em { font-style: normal; font-size: 13px; letter-spacing: .3px; }
   .boost:active .btn { transform: scale(.92); }
-  .boost.armed .btn { transform: scale(1.12); filter: drop-shadow(0 0 10px #ffd34d) drop-shadow(0 0 4px #fff); }
-  .boost.locked .btn, .boost.empty .btn { filter: grayscale(1) brightness(.85); opacity: .7; }
+  .boost.armed .btn { transform: scale(1.1) translateY(-4px); filter: drop-shadow(0 0 10px #ffd34d) drop-shadow(0 0 3px #fff); }
+  .boost.locked .btn, .boost.empty .btn { filter: grayscale(1) brightness(.92); opacity: .75; }
 
-  /* ---------- 弹窗（底板图片 ui_panel；标题在格子带下方，按钮是图片底板 + 居中文字） ---------- */
-  #panel { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(30,12,8,.55); padding: 16px; }
-  #panel.hidden { display: none; }
-  .card { position: relative; width: min(86vw, 340px); aspect-ratio: 640 / 612; animation: pop .4s cubic-bezier(.2,1.6,.4,1); }
+  /* ---------- 弹窗：c_panel（900×738）。标题写在顶部红缎带 [25.7,2.6,74.4,21.8]，内容放主体空白 [7,27,93,92] ---------- */
+  .modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(40,18,8,.5); padding: 16px; }
+  .card { position: relative; width: min(88vw, 350px); aspect-ratio: 900 / 738; animation: pop .4s cubic-bezier(.2,1.6,.4,1); filter: drop-shadow(0 12px 22px rgba(0,0,0,.35)); }
   .card > img.bg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .card .inner { position: absolute; left: 10%; right: 10%; top: 20%; bottom: 9%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; color: var(--ink); }
-  #pTitleImg { width: 86%; margin-top: -6%; }
-  #pTitle { font-size: 30px; color: #c41e12; }
-  #pText { font-size: 15px; font-family: "PingFang SC", sans-serif; font-weight: 600; line-height: 1.5; }
+  .card .title { position: absolute; left: 29%; right: 29%; top: 4%; height: 14%; display: flex; align-items: center; justify-content: center; font-size: clamp(13px, 4.4vw, 19px); white-space: nowrap; }
+  .card .inner { position: absolute; left: 10%; right: 10%; top: 28%; bottom: 11%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; color: var(--ink); }
+  #pTitleImg { width: 72%; }
+  #pText { font-size: clamp(14px, 4.4vw, 18px); line-height: 1.35; white-space: pre-line; }
   .btns { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .pbtn { position: relative; width: 76%; aspect-ratio: 640 / 237; border: 0; background: none; padding: 0; cursor: pointer; font-family: inherit; }
+  .pbtn { position: relative; width: 74%; aspect-ratio: 512 / 101; border: 0; background: none; padding: 0; cursor: pointer; }
   .pbtn > img { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .pbtn span { position: absolute; inset: 0 12%; display: flex; align-items: center; justify-content: center; font-size: 21px; padding-bottom: 3%; }
-  .pbtn.cream { aspect-ratio: 640 / 197; width: 66%; }
-  .pbtn.cream span { color: var(--stroke); font-size: 18px; text-shadow: none; }
+  .pbtn span { position: absolute; inset: 0 10%; display: flex; align-items: center; justify-content: center; font-size: clamp(15px, 4.8vw, 20px); padding-bottom: 2%; }
+  .pbtn.white { aspect-ratio: 512 / 112; width: 64%; }
+  .pbtn.white span { color: var(--ink); text-shadow: none; font-size: clamp(13px, 4.2vw, 17px); }
   .pbtn:active { transform: scale(.95); }
   .hidden { display: none !important; }
   @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-  /* ---------- 开始界面 ---------- */
-  #start { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6vh; background: rgba(40,16,8,.25); }
+  /* ---------- 标题页：只有 Logo 和开始按钮 ---------- */
+  #start { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7vh; background: rgba(40,16,8,.18); }
   #start img.logo { width: min(86vw, 420px); filter: drop-shadow(0 10px 18px rgba(0,0,0,.35)); animation: float 3s ease-in-out infinite; }
-  #start .pbtn { width: min(60vw, 240px); }
+  #start .pbtn { width: min(64vw, 260px); }
+  #start .pbtn span { font-size: clamp(24px, 7.6vw, 32px); letter-spacing: 1px; }
   @keyframes float { 50% { transform: translateY(-8px) rotate(-1deg); } }
+  #hud, #bar, #nav { transition: opacity .4s; }
+  body.on-start #hud, body.on-start #bar, body.on-start #nav, body.on-start #toast { opacity: 0; pointer-events: none; }
+  body.on-start #gear { pointer-events: none; }
 
   #nav { position: fixed; top: calc(var(--hud-h) + 70px); left: 10px; display: flex; flex-direction: column; gap: 6px; }
   body:not(.debug) #nav { display: none; }
-  #nav button { pointer-events: auto; min-width: 34px; height: 30px; padding: 0 8px; border-radius: 8px; border: 1px solid #fff; background: rgba(0,0,0,.4); color: #fff; font-size: 13px; font-family: inherit; }
+  #nav button { pointer-events: auto; min-width: 34px; height: 30px; padding: 0 8px; border-radius: 8px; border: 1px solid #fff; background: rgba(0,0,0,.4); color: #fff; font-size: 13px; }
 </style>
 <script type="importmap">
 { "imports": { "planck": "https://cdn.jsdelivr.net/npm/planck@1.0.6/dist/planck.mjs" } }
 </script>
 </head>
-<body>
+<body class="on-start">
 <canvas id="c"></canvas>
 
 <div id="hud">
   <div id="banner">
-    <img src="assets/ui/ui_banner.png" alt="">
-    <div id="lvlSlot"><small>LEVEL</small><b id="lvlNum">1</b></div>
-    <div id="ribbonSlot">
-      <div id="ammo" class="stroke"><img src="assets/ui/icon_tomato.png" alt=""><span>×<b id="shots">0</b></span></div>
-      <div id="tag"><img id="tagImg" src="assets/ui/ui_tag_hard.png" alt=""><span id="tagText" class="stroke">困难</span></div>
-    </div>
+    <img class="bg" src="assets/ui/c_hud.png" alt="">
+    <div id="lvlCell" class="cell"><b id="lvlNum">1</b></div>
+    <div id="ribbon"><img src="assets/ui/c_ribbon.png" alt=""><span class="stroke">LEVEL</span></div>
+    <div id="ammoCell" class="cell"><small>TOMATOES</small><div class="row"><img src="assets/ui/icon_tomato.png" alt=""><i>×</i><b id="shots">0</b></div></div>
+    <div id="goalCell" class="cell"><small>GOAL</small><div class="row"><img src="assets/ui/icon_goal.png" alt=""><b id="left">0</b><em>LEFT</em></div></div>
+    <button id="gear" aria-label="Settings"><img src="assets/ui/c_gear.png" alt=""></button>
   </div>
-  <div id="chapter" class="stroke"></div>
-  <div id="progress">
-    <div id="barBox"><img src="assets/ui/ui_bar_frame.png" alt=""><div id="barClip"><div id="barFill"><img src="assets/ui/ui_bar_fill.png" alt=""></div></div></div>
-    <div id="left" class="stroke"></div>
-  </div>
+  <div id="tag"><img id="tagImg" src="assets/ui/c_tag_hard.png" alt=""><span id="tagText" class="stroke">HARD</span></div>
 </div>
 <div id="toast" class="stroke"></div>
 <div id="combo"><b class="stroke" id="comboNum"></b><img id="comboImg" alt=""></div>
 
 <div id="bar">
-  <button class="boost" id="bTri" data-k="tri"><div class="btn"><img src="assets/ui/ui_btn_round.png" alt=""><img class="icon" src="assets/ui/icon_triple.png" alt=""><span class="cnt">3</span></div><em class="stroke">三连发</em></button>
-  <button class="boost" id="bRocket" data-k="rocket"><div class="btn"><img src="assets/ui/ui_btn_round.png" alt=""><img class="icon" src="assets/ui/icon_rocket.png" alt=""><span class="cnt">3</span></div><em class="stroke">穿甲火箭</em></button>
-  <button class="boost" id="bBig" data-k="big"><div class="btn"><img src="assets/ui/ui_btn_round.png" alt=""><img class="icon" src="assets/ui/icon_melon.png" alt=""><span class="cnt">3</span></div><em class="stroke">西瓜弹</em></button>
+  <button class="boost" id="bTri" data-k="tri"><div class="btn"><img src="assets/ui/c_bubble.png" alt=""><img class="icon" src="assets/ui/icon_triple.png" alt=""><div class="cnt"><img src="assets/ui/c_badge.png" alt=""><span>3</span></div></div><em class="stroke">Triple</em></button>
+  <button class="boost" id="bRocket" data-k="rocket"><div class="btn"><img src="assets/ui/c_bubble.png" alt=""><img class="icon" src="assets/ui/icon_rocket.png" alt=""><div class="cnt"><img src="assets/ui/c_badge.png" alt=""><span>3</span></div></div><em class="stroke">Rocket</em></button>
+  <button class="boost" id="bBig" data-k="big"><div class="btn"><img src="assets/ui/c_bubble.png" alt=""><img class="icon" src="assets/ui/icon_melon.png" alt=""><div class="cnt"><img src="assets/ui/c_badge.png" alt=""><span>3</span></div></div><em class="stroke">Melon</em></button>
 </div>
 
-<div id="nav"><button id="prev">‹</button><button id="next">›</button><button id="theme">换皮</button><button id="mute">🔊</button></div>
+<div id="nav"><button id="prev">‹</button><button id="next">›</button><button id="theme">Skin</button><button id="mute">🔊</button></div>
 
-<div id="panel" class="hidden">
+<div id="panel" class="modal hidden">
   <div class="card">
-    <img class="bg" src="assets/ui/ui_panel.png" alt="">
+    <img class="bg" src="assets/ui/c_panel.png" alt="">
+    <div class="title stroke" id="pTitle"></div>
     <div class="inner">
       <img id="pTitleImg" src="assets/ui/txt_clear.png" alt="">
-      <div id="pTitle" class="hidden"></div>
       <div id="pText"></div>
       <div class="btns">
-        <button class="pbtn" id="pMain"><img src="assets/ui/ui_btn_green.png" alt=""><span class="stroke" id="pMainText"></span></button>
-        <button class="pbtn cream" id="pAlt"><img src="assets/ui/ui_btn_cream.png" alt=""><span id="pAltText"></span></button>
+        <button class="pbtn" id="pMain"><img src="assets/ui/c_btn_green.png" alt=""><span class="stroke" id="pMainText"></span></button>
+        <button class="pbtn white" id="pAlt"><img src="assets/ui/c_btn_white.png" alt=""><span id="pAltText"></span></button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div id="settings" class="modal hidden">
+  <div class="card">
+    <img class="bg" src="assets/ui/c_panel.png" alt="">
+    <div class="title stroke">SETTINGS</div>
+    <div class="inner">
+      <div class="btns" style="margin-top:4%">
+        <button class="pbtn white" id="sSound"><img src="assets/ui/c_btn_white.png" alt=""><span id="sSoundText">SOUND: ON</span></button>
+        <button class="pbtn white" id="sRestart"><img src="assets/ui/c_btn_white.png" alt=""><span>RESTART LEVEL</span></button>
+      </div>
+      <button class="pbtn" id="sClose"><img src="assets/ui/c_btn_green.png" alt=""><span class="stroke">RESUME</span></button>
     </div>
   </div>
 </div>
 
 <div id="start">
   <img class="logo" src="assets/ui/logo.png" alt="Tomato Blast">
-  <button class="pbtn" id="startBtn"><img src="assets/ui/ui_btn_green.png" alt=""><span class="stroke">开始游戏</span></button>
+  <button class="pbtn" id="startBtn"><img src="assets/ui/c_btn_green.png" alt=""><span class="stroke">PLAY</span></button>
 </div>
 
 <script type="module" src="./game.js"></script>

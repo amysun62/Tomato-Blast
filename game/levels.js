@@ -5,7 +5,7 @@
 
 export const ARCH = {
   box:    { role: '轻方块', w: 1, h: 1, mass: 1.0, mat: 'wood' },
-  heavy:  { role: '重方块', w: 1, h: 1, mass: 3.5, mat: 'stone' },
+  heavy:  { role: '重方块', w: 1, h: 1, mass: 2.8, mat: 'stone' },
   slick:  { role: '滑方块', w: 1, h: 1, mass: 0.8, mat: 'ice' },
   boom:   { role: '会爆的罐', w: 0.86, h: 0.95, mass: 1.0, mat: 'metal', explosive: true },
   plank:  { role: '长板', w: 2.6, h: 0.26, mass: 1.2, mat: 'wood' },
@@ -27,8 +27,12 @@ export function difficultyOf(n) {
 }
 
 const GAP = 0.004;
-const H = (t) => ARCH[t].h;
-const W = (t) => ARCH[t].w;
+// 每个主题的每种原型按它真实精灵图的宽高比定尺寸（由 game.js 加载素材后注入）；没注入时用 ARCH 的名义尺寸
+let DIMS = null, CUR = 'kitchen';
+export function setDims(fn) { DIMS = fn; }
+const dim = (t) => (DIMS && DIMS(CUR, t)) || ARCH[t];
+const H = (t) => dim(t).h;
+const W = (t) => dim(t).w;
 const at = (Id, x, y, Custom) => ({ Id, x, y, ...(Custom ? { Custom } : {}) });
 
 // 竖直叠一摞（base = 底面高度）
@@ -60,50 +64,56 @@ const top = (type, rows) => rows * (H(type) + GAP);   // 一摞的顶面高度
 
 // ---------- 前 10 关：手工教学关 ----------
 const HANDMADE = [
-  { name: '开胃菜', Theme: 'kitchen', MoveCount: 7, Table: { w: 6 },
-    Entities: [...wall('box', 0, 3, 3)] },
+  { name: 'Warm-Up', Theme: 'kitchen', MoveCount: 7, Table: { w: 6 },
+    build: () => [...wall('box', 0, 3, 3)] },
 
-  { name: '罐头塔', Theme: 'kitchen', MoveCount: 8, Table: { w: 6.5 },
-    Entities: [...pyramid('drum', 0, 5)] },
+  { name: 'Can Tower', Theme: 'kitchen', MoveCount: 8, Table: { w: 6.5 },
+    build: () => [...pyramid('drum', 0, 5)] },
 
-  { name: '叠叠乐', Theme: 'kitchen', MoveCount: 9, Table: { w: 7 },
-    Entities: [...stack('slick', -2.4, 4), ...wall('box', 0, 2, 3), ...stack('disc', 2.4, 6), at('ball', 0, top('box', 3) + 0.4)] },
+  { name: 'Stack Attack', Theme: 'kitchen', MoveCount: 9, Table: { w: 7 },
+    build: () => [...stack('slick', -2.4, 4), ...wall('box', 0, 2, 3), ...stack('disc', 2.4, 6), at('ball', -0.52, top('box', 3) + H('ball') / 2)] },
 
-  { name: '重量级', Theme: 'drinks', MoveCount: 9, Table: { w: 7 },
-    Entities: [...wall('heavy', -1.6, 2, 2), ...wall('box', 1.4, 3, 3), ...row('bottle', 1.4, 3, 0.95, top('box', 3)), ...row('jar', -1.6, 2, 1.0, top('heavy', 2))] },
+  { name: 'Heavyweights', Theme: 'drinks', MoveCount: 9, Table: { w: 7 },
+    build: () => [...wall('heavy', -1.6, 2, 2), ...wall('box', 1.4, 3, 3), ...row('bottle', 1.4, 3, 0.95, top('box', 3)), ...row('jar', -1.6, 2, 1.0, top('heavy', 2))] },
 
-  { name: '一点就炸', Theme: 'drinks', MoveCount: 6, Table: { w: 6.5 },
-    Entities: [...wall('box', -1.53, 2, 2), at('boom', 0, H('boom') / 2), at('box', 0, 1 + H('box') / 2 - 0.02), ...wall('box', 1.53, 2, 2)] },
+  { name: 'Hair Trigger', Theme: 'drinks', MoveCount: 6, Table: { w: 6.5 },
+    build: () => {
+      const side = W('boom') / 2 + 0.06 + (W('box') + 0.02);   // 两侧木箱墙紧贴炸药罐
+      return [...wall('box', -side, 2, 2), at('boom', 0, H('boom') / 2), at('box', 0, H('boom') + GAP + H('box') / 2), ...wall('box', side, 2, 2)];
+    } },
 
-  { name: '高架桥', Theme: 'drinks', MoveCount: 9, Table: { w: 7.5 },
-    Entities: [
-      ...stack('pillar', -2.6, 1), ...stack('pillar', 0, 1), ...stack('pillar', 2.6, 1),
-      at('plank', -1.3, 2 + 0.13 + GAP), at('plank', 1.3, 2 + 0.13 + GAP),
-      ...row('jar', -1.3, 2, 1.0, 2.26 + GAP * 2), ...row('jar', 1.3, 2, 1.0, 2.26 + GAP * 2),
-      ...row('bottle', -1.3, 2, 0.9), ...row('bottle', 1.3, 2, 0.9),
-    ] },
+  { name: 'Overpass', Theme: 'drinks', MoveCount: 9, Table: { w: 7.5 },
+    build: () => {
+      const deck = H('pillar') + GAP, onDeck = deck + H('plank') + GAP;
+      return [
+        ...stack('pillar', -2.6, 1), ...stack('pillar', 0, 1), ...stack('pillar', 2.6, 1),
+        at('plank', -1.3, deck + H('plank') / 2), at('plank', 1.3, deck + H('plank') / 2),
+        ...row('jar', -1.3, 2, 1.0, onDeck), ...row('jar', 1.3, 2, 1.0, onDeck),
+        ...row('bottle', -1.3, 2, 0.9), ...row('bottle', 1.3, 2, 0.9),
+      ];
+    } },
 
-  { name: '移动挡板', Theme: 'bakery', MoveCount: 8, Table: { w: 6.5 },
-    Entities: [...wall('box', 0, 4, 3), at('slider', -3.0, 2.2, { amp: 1.2, cycle: 2.4 })] },
+  { name: 'Moving Guard', Theme: 'bakery', MoveCount: 8, Table: { w: 6.5 },
+    build: () => [...wall('box', 0, 4, 3), at('slider', -3.0, 2.2, { amp: 1.2, cycle: 2.4 })] },
 
-  { name: '下午茶', Theme: 'bakery', MoveCount: 9, Table: { w: 7.5 },
-    Entities: [...pyramid('drum', -1.7, 4), ...pyramid('jar', 2.2, 3), at('boom', 0.6, H('boom') / 2), at('ball', 2.2, top('jar', 3) + 0.4)] },
+  { name: 'High Tea', Theme: 'bakery', MoveCount: 9, Table: { w: 7.5 },
+    build: () => [...pyramid('drum', -1.7, 4), ...pyramid('jar', 2.2, 3), at('boom', 0.6, H('boom') / 2), at('ball', 2.2, top('jar', 3) + H('ball') / 2)] },
 
-  { name: '甜品城堡', Theme: 'bakery', MoveCount: 10, Table: { w: 8 },
-    Entities: [
+  { name: 'Dessert Castle', Theme: 'bakery', MoveCount: 10, Table: { w: 8 },
+    build: () => [
       ...stack('heavy', -2.5, 3), ...stack('heavy', 2.5, 3),
       ...wall('box', 0, 4, 2), ...pyramid('drum', 0, 3, top('box', 2)),
       at('jar', -2.5, top('heavy', 3) + H('jar') / 2), at('jar', 2.5, top('heavy', 3) + H('jar') / 2),
       ...stack('disc', -3.6, 4), ...stack('disc', 3.6, 4),
     ] },
 
-  { name: '主厨挑战', Theme: 'bakery', MoveCount: 12, Table: { w: 9 },
-    Entities: [
+  { name: "Chef's Challenge", Theme: 'bakery', MoveCount: 12, Table: { w: 9 },
+    build: () => [
       ...wall('heavy', -3.2, 2, 3), ...wall('heavy', 3.2, 2, 3),
       ...wall('slick', 0, 3, 2), ...wall('box', 0, 3, 2, top('slick', 2)),
       at('boom', -3.2, top('heavy', 3) + H('boom') / 2), at('boom', 3.2, top('heavy', 3) + H('boom') / 2),
       ...pyramid('jar', 0, 2, top('slick', 2) + top('box', 2)),
-      at('wall', -4.4, 0.4), at('slider', -4.4, 2.9, { amp: 1.3, cycle: 2.8 }),
+      at('slider', -4.4, 2.9, { amp: 1.3, cycle: 2.8 }),   // 只留移动挡板：靠抓时机，不封死
     ] },
 ];
 
@@ -111,12 +121,15 @@ const HANDMADE = [
 // 同一个关号永远生成同一关（种子 = 关号），可复现、可被机器人逐关校准
 export const THEME_CYCLE = ['kitchen', 'drinks', 'bakery'];
 const NAMES = {
-  kitchen: ['番茄派对', '酱料阵', '厨房乱炖', '罐头山', '砧板风云', '辣味大挑战', '主厨的桌子', '番茄雨', '调料架', '晚餐时间'],
-  drinks: ['气泡时间', '冰镇一夏', '汽水阵', '果汁吧台', '摇一摇', '冰块城', '柠檬派对', '饮料柜', '吸管高塔', '夏日畅饮'],
-  bakery: ['下午茶', '面包山', '蛋挞塔', '奶油风暴', '甜点柜', '巧克力堡', '烤箱时间', '杯子蛋糕', '法棍桥', '甜品盛宴'],
+  kitchen: ['Tomato Party', 'Sauce Squad', 'Kitchen Chaos', 'Can Mountain', 'Chop Shop', 'Spicy Showdown', "Chef's Table", 'Tomato Rain', 'Spice Rack', 'Dinner Time'],
+  drinks: ['Fizz O\'Clock', 'Chill Out', 'Soda Stack', 'Juice Bar', 'Shake It Up', 'Ice City', 'Lemon Party', 'Fridge Raid', 'Straw Tower', 'Summer Sips'],
+  bakery: ['Tea Time', 'Bread Hill', 'Tart Tower', 'Cream Storm', 'Pastry Case', 'Choco Fort', 'Oven Hour', 'Cupcake Crew', 'Baguette Bridge', 'Sweet Feast'],
 };
+export const THEME_NAMES = { kitchen: 'Tomato Kitchen', drinks: 'Soda Bar', bakery: 'Bakery' };
+// 实测发现布局有问题的关，换一个种子重新生成（关号 → 盐值）
+const RESEED = { 54: 7 };
 function seeded(n) {
-  let s = (n * 2654435761) % 2147483647 || 1;
+  let s = ((n + (RESEED[n] || 0) * 1000) * 2654435761) % 2147483647 || 1;
   return () => (s = (s * 16807) % 2147483647) / 2147483647;
 }
 // 每个模块：fit(sw, r, hard) → { w: 占用宽度, make(cx) → 物件列表 }
@@ -142,37 +155,42 @@ const MODULES = [
   } },
   { id: 'bottles', min: 15, fit: (sw) => {
     const n = Math.max(2, Math.min(5, Math.floor(sw / 0.8)));
-    return { w: n * 0.8, make: (cx) => [...row('bottle', cx, n, 0.8), ...row('plank', cx, 1, 0, H('bottle') + GAP), ...row('bottle', cx, Math.max(1, n - 2), 0.8, H('bottle') + 0.26 + GAP * 2)] };
+    return { w: n * 0.8, make: (cx) => [...row('bottle', cx, n, 0.8), ...row('plank', cx, 1, 0, H('bottle') + GAP), ...row('bottle', cx, Math.max(1, n - 2), 0.8, H('bottle') + H('plank') + GAP * 2)] };
   } },
   { id: 'discs', min: 18, fit: (sw, r) => {
     const h = 4 + Math.floor(r() * 4);
     return { w: 2.0, make: (cx) => [...stack('disc', cx - 0.5, h), ...stack('disc', cx + 0.5, h)] };
   } },
-  { id: 'bridge', min: 22, fit: () => ({ w: 3.2, make: (cx) => [
-    ...stack('pillar', cx - 1.2, 1), ...stack('pillar', cx + 1.2, 1),
-    at('plank', cx, 2 + 0.13 + GAP), ...row('jar', cx, 2, 1.1, 2.26 + GAP * 2), at('drum', cx, H('drum') / 2),
-  ] }) },
+  { id: 'bridge', min: 22, fit: () => ({ w: 3.2, make: (cx) => {
+    const deck = H('pillar') + GAP, span = Math.min(1.2, W('plank') / 2 - W('pillar') / 2);
+    return [
+      ...stack('pillar', cx - span, 1), ...stack('pillar', cx + span, 1),
+      at('plank', cx, deck + H('plank') / 2), ...row('jar', cx, 2, 1.1, deck + H('plank') + GAP), at('drum', cx, H('drum') / 2),
+    ];
+  } }) },
   { id: 'castle', min: 26, fit: () => ({ w: 3.2, make: (cx) => [
     ...stack('heavy', cx - 1.1, 3), ...stack('heavy', cx + 1.1, 3), ...stack('box', cx, 2),
     at('drum', cx, top('box', 2) + H('drum') / 2),
     at('bottle', cx - 1.1, top('heavy', 3) + H('bottle') / 2), at('bottle', cx + 1.1, top('heavy', 3) + H('bottle') / 2),
   ] }) },
-  { id: 'boomCore', min: 9, fit: () => ({ w: 3.2, make: (cx) => [
-    ...wall('box', cx - 1.04, 1, 2), at('boom', cx, H('boom') / 2), at('box', cx, 1 + H('box') / 2 - 0.02), ...wall('box', cx + 1.04, 1, 2),
-  ] }) },
+  { id: 'boomCore', min: 9, fit: () => ({ w: 3.2, make: (cx) => {
+    const side = W('boom') / 2 + 0.06 + W('box') / 2;
+    return [...wall('box', cx - side, 1, 2), at('boom', cx, H('boom') / 2), at('box', cx, H('boom') + GAP + H('box') / 2), ...wall('box', cx + side, 1, 2)];
+  } }) },
   { id: 'fruit', min: 14, fit: (sw) => {
     const n = Math.max(2, Math.min(4, Math.floor(sw / 1.05)));
-    return { w: n * 1.05, make: (cx) => [...wall('box', cx, n, 1), ...row('ball', cx, n, 1.02, 1 + GAP), ...row('ball', cx, Math.max(1, n - 1), 1.02, 1.8 + GAP)] };
+    return { w: n * 1.05, make: (cx) => [...wall('box', cx, n, 1), ...row('ball', cx, n, 1.02, top('box', 1)), ...row('ball', cx, Math.max(1, n - 1), 1.02, top('box', 1) + H('ball') + GAP)] };
   } },
 ];
 
-function genLevel(n) {
+const themeOf = (n) => THEME_CYCLE[Math.floor((n - 1) / 10) % 3];
+function genEntities(n) {
   const r = seeded(n);
   const diff = difficultyOf(n);
   const hard = diff > 0;
-  const theme = THEME_CYCLE[Math.floor((n - 1) / 10) % 3];
+  const theme = themeOf(n);
   const slots = n < 20 ? 2 : r() < 0.5 ? 3 : 2;
-  const width = slots === 3 ? 9 : 7;
+  const width = slots === 3 ? 8 : 6.5;   // 2D 里桌子太宽，打倒的东西推不下桌
   const sw = width / slots - 0.4;
   const pool = MODULES.filter((m) => m.min <= n);
   const ents = [];
@@ -184,8 +202,8 @@ function genLevel(n) {
     if (mod.w > sw + 0.5) mod = MODULES[0].fit(sw, r, hard);   // 放不下就退回一面墙
     ents.push(...mod.make(cx));
   }
-  // 困难关：桌面左缘一块挡板（只挡下半截，学 Royal 的 Blocker）；超难关：桌子左上方一块上下移动的挡板
-  if (diff === 1 && n >= 24) ents.push(at('wall', -width / 2 + 0.2, 0.4));   // 立在桌面左缘，挡住下半截
+  // 困难关：桌子左缘上方一块悬空挡板（学 Royal 的 Blocker）；超难关：桌子左上方一块上下移动的挡板
+  if (diff === 1 && n >= 24) ents.push(at('wall', -width / 2 + 0.2, 1.3 + H('wall') / 2));   // 悬空挡板：底边离桌面 1.3 米，挡高处、留下方平射的缝
   if (diff === 2) ents.push(at('slider', -width / 2 + 0.25, 2.4 + r() * 0.6, { amp: 1.1 + r() * 0.4, cycle: 2.2 + r() * 1.2 }));
   // 挡板那一列清空，避免开局物件和挡板重叠被弹飞
   for (const b of ents.filter((e) => ARCH[e.Id].counted === false)) {
@@ -194,19 +212,46 @@ function genLevel(n) {
       if (e !== b && ARCH[e.Id].counted !== false && Math.abs(e.x - b.x) < W(e.Id) / 2 + W(b.Id) / 2 + 0.15) ents.splice(k, 1);
     }
   }
+  return { ents, width };
+}
+// 炮弹数公式（机器人校准前的初值）：Royal 中位数 ≈ 物件数 × 0.28；Angry 前 30 关蜜月期多给
+function shotsFor(n, ents) {
   const counted = ents.filter((e) => ARCH[e.Id].counted !== false).length;
-  let shots = Math.ceil(counted * 0.28) + 3;            // Royal 中位数 ≈ 物件数 × 0.28
-  if (n <= 30) shots += 2;                               // Angry 前 30 关蜜月期多给
-  shots = Math.max(6, Math.min(18, shots - diff));
-  return { name: NAMES[theme][(n - 1) % 10], Theme: theme, MoveCount: shots, Table: { w: width }, Entities: ents, Generated: true };
+  let shots = Math.ceil(counted * 0.28) + 3;
+  if (n <= 30) shots += 2;
+  return Math.max(6, Math.min(18, shots - difficultyOf(n)));
 }
 
-// 机器人校准后的炮弹数覆盖（关号 → 炮弹数）；2D 物理改版后需要重新校准，先清空
-export const SHOT_OVERRIDES = {};
+// 2026-10-22 机器人校准（2D 版）：机器人清台发数 + 余量（普通 +3，前 30 关 +4；困难 +2；超难 +1），最少 5、最多 20
+// 机器人 25 发内没清完的第 54 关用公式值 +2；前 10 关手工关也按校准结果覆盖
+export const SHOT_OVERRIDES = {
+  1: 7, 2: 7, 3: 8, 4: 11, 5: 6, 6: 8, 7: 14, 8: 7, 9: 17, 10: 18, 11: 8, 12: 8, 13: 8, 14: 5, 15: 6,
+  16: 7, 17: 6, 18: 9, 19: 7, 20: 7, 21: 8, 22: 6, 23: 8, 24: 9, 25: 7, 26: 8, 27: 14, 28: 10, 29: 8, 30: 8,
+  31: 7, 32: 8, 33: 5, 34: 17, 35: 5, 36: 8, 37: 6, 38: 7, 39: 11, 40: 5, 41: 10, 42: 7, 43: 8, 44: 19, 45: 5,
+  46: 8, 47: 6, 48: 7, 49: 9, 50: 6, 51: 5, 52: 6, 53: 7, 54: 9, 55: 7, 56: 7, 57: 7, 58: 12, 59: 9, 60: 10,
+  61: 9, 62: 9, 63: 10, 64: 10, 65: 6, 66: 7, 67: 12, 68: 8, 69: 6, 70: 8, 71: 9, 72: 5, 73: 8, 74: 8, 75: 12,
+  76: 7, 77: 10, 78: 7, 79: 6, 80: 9, 81: 11, 82: 7, 83: 8, 84: 6, 85: 6, 86: 11, 87: 9, 88: 7, 89: 8, 90: 10,
+  91: 6, 92: 7, 93: 8, 94: 8, 95: 8, 96: 10, 97: 11, 98: 7, 99: 8, 100: 12,
+};
 
-export const LEVELS = [...HANDMADE];
-for (let n = HANDMADE.length + 1; n <= 100; n++) {
-  const lv = genLevel(n);
-  if (SHOT_OVERRIDES[n]) lv.MoveCount = SHOT_OVERRIDES[n];
-  LEVELS.push(lv);
+// 关卡元数据（名字、主题），100 关
+export const LEVELS = [
+  ...HANDMADE.map((h) => ({ name: h.name, Theme: h.Theme })),
+  ...Array.from({ length: 100 - HANDMADE.length }, (_, k) => {
+    const n = HANDMADE.length + 1 + k;
+    // 每个主题 10 个名字，第二轮起加罗马数字后缀，避免重名
+    const round = Math.floor((n - 11) / 30);
+    return { name: NAMES[themeOf(n)][(n - 1) % 10] + ['', ' II', ' III', ' IV'][round], Theme: themeOf(n), Generated: true };
+  }),
+];
+// 按主题的真实精灵尺寸现算关卡（换皮时传 themeOverride，同一布局用另一套食物的尺寸重算）
+export function buildLevel(idx, themeOverride) {
+  const n = idx + 1, meta = LEVELS[idx];
+  CUR = themeOverride || meta.Theme;
+  if (idx < HANDMADE.length) {
+    const h = HANDMADE[idx];
+    return { ...meta, Theme: CUR, MoveCount: SHOT_OVERRIDES[n] || h.MoveCount, Table: h.Table, Entities: h.build() };
+  }
+  const { ents, width } = genEntities(n);
+  return { ...meta, Theme: CUR, MoveCount: SHOT_OVERRIDES[n] || shotsFor(n, ents), Table: { w: width }, Entities: ents };
 }

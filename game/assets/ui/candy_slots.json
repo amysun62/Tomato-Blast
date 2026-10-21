@@ -1,0 +1,81 @@
+{
+ "_note": "percent [x0,y0,x1,y1] of the png; eyeballed on 5% grid, cross-checked by numpy connected components (cell fills measured 1-2% tighter than visible borders)",
+ "c_hud": {
+  "size": [
+   900,
+   219
+  ],
+  "cell_left": [
+   3.5,
+   12.5,
+   23,
+   88
+  ],
+  "cell_mid": [
+   25.7,
+   12.5,
+   58.5,
+   88.5
+  ],
+  "cell_right": [
+   60.3,
+   12.5,
+   85.7,
+   88.5
+  ],
+  "gear_socket": [
+   88,
+   29,
+   97.6,
+   70.5
+  ],
+  "gear_socket_inner": [
+   88.6,
+   34.7,
+   96.9,
+   67.1
+  ]
+ },
+ "c_panel": {
+  "size": [
+   900,
+   738
+  ],
+  "ribbon": [
+   25.7,
+   2.6,
+   74.4,
+   21.8
+  ],
+  "body_blank": [
+   7,
+   27,
+   93,
+   92
+  ],
+  "body_cream_full": [
+   5.6,
+   16.4,
+   94.3,
+   93.2
+  ]
+ },
+ "c_bubble": {
+  "size": [
+   488,
+   512
+  ],
+  "inner_circle": [
+   5.1,
+   4.9,
+   94.7,
+   94.5
+  ],
+  "icon_safe": [
+   15,
+   15,
+   85,
+   85
+  ]
+ }
+}

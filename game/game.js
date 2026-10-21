@@ -2,7 +2,7 @@
 // 画面：物件、桌子、发射器全部是 AI 生成的海报级精灵图；碰撞形状从图片轮廓（alpha）自动提取凸包
 // 物理：planck.js（Box2D），x 向右、y 向上、单位米；桌面上表面 y = 0
 import * as planck from 'planck';
-import { LEVELS, ARCH, difficultyOf } from './levels.js';
+import { LEVELS, ARCH, difficultyOf, THEME_NAMES, buildLevel, setDims } from './levels.js';
 import * as sfx from './sfx.js';
 
 const Vec2 = (x, y) => new planck.Vec2(x, y);
@@ -33,9 +33,9 @@ function ddaShots(n, diff, base) {
 
 // 道具：按关卡解锁（Angry：三连 9 → 火箭 13 → 大球 23，原型按比例提前）
 const BOOSTERS = {
-  tri: { name: '三连发', unlock: 2, btn: 'bTri' },
-  rocket: { name: '穿甲火箭', unlock: 3, btn: 'bRocket' },
-  big: { name: '西瓜弹', unlock: 5, btn: 'bBig' },
+  tri: { name: 'Triple Shot', unlock: 2, btn: 'bTri' },
+  rocket: { name: 'Piercing Rocket', unlock: 3, btn: 'bRocket' },
+  big: { name: 'Melon Bomb', unlock: 5, btn: 'bBig' },
 };
 const inv = { tri: 3, rocket: 3, big: 3, ...store.get('inv', {}) };
 
@@ -52,7 +52,7 @@ async function loadAssets() {
   try { MANIFEST = await (await fetch('assets/sprites/manifest.json', { cache: 'no-store' })).json(); } catch { MANIFEST = {}; }
   const jobs = Object.keys(MANIFEST).map((k) => loadImg(k, `assets/sprites/${k}.png`));
   for (const t of ['kitchen', 'drinks', 'bakery']) for (const v of ['v', 'h']) jobs.push(loadImg(`bg_${t}_${v}`, `assets/bg_${t}_${v}.jpg`));
-  for (const k of ['icon_tomato', 'icon_triple', 'icon_melon', 'icon_rocket', 'txt_great', 'txt_awesome', 'txt_amazing']) jobs.push(loadImg(k, `assets/ui/${k}.png`));
+  for (const k of ['icon_tomato', 'icon_triple', 'icon_melon', 'icon_rocket', 'txt_great', 'txt_awesome', 'txt_amazing', 'fg_tomatoes']) jobs.push(loadImg(k, `assets/ui/${k}.png`));
   await Promise.all(jobs);
 }
 
@@ -107,7 +107,18 @@ function spriteKey(theme, arch, i) {
   if (vs.length) return `${base}_${vs[i % vs.length]}`;
   return MANIFEST[base] ? base : null;
 }
-// 精灵在原型框（w×h 米）里等比"contain"放置，返回实际绘制尺寸
+// 每个主题每种原型的真实尺寸（米）：按精灵图宽高比推出，关卡生成和碰撞都用它
+//   横向物件（板、扁块）保住宽度；竖向物件（罐、瓶、柱）保住高度；方块放进 1×1；圆的保住直径
+function archDims(theme, arch) {
+  const def = ARCH[arch];
+  const key = spriteKey(theme, arch, 0), m = key && MANIFEST[key];
+  if (!m || def.round) return { w: def.w, h: def.h };
+  const a = m.w / m.h;
+  if (def.w >= def.h * 1.5) return { w: def.w, h: Math.max(0.16, def.w / a) };
+  if (Math.abs(def.w - def.h) < 0.01) return a >= 1 ? { w: def.w, h: def.w / a } : { w: def.h * a, h: def.h };
+  return { w: Math.max(0.22, Math.min(def.h * 1.3, def.h * a)), h: def.h };
+}
+// 精灵在尺寸框（w×h 米）里等比"contain"放置，返回实际绘制尺寸
 function fitBox(key, w, h) {
   const im = IMG[key];
   if (!im) return { dw: w, dh: h };
@@ -130,7 +141,7 @@ function layout() {
   const top = cssPx('--hud-h') + 12, bottom = VH - cssPx('--bar-h');
   const tw = S.level.Table.w;
   // 世界取景：左边留给发射器，右边留一点；上面按关卡最高物件留空
-  const x0 = LAUNCH.x - launcherBox().w / 2 - 0.25, x1 = tw / 2 + 0.45;
+  const x0 = LAUNCH.x - launcherBox().w / 2 - 0.1, x1 = tw / 2 + 0.45;
   const y0 = LAUNCH.y - 0.35, y1 = Math.max(4.6, S.maxTop + 1.6);
   const s = Math.min(VW / (x1 - x0), (bottom - top) / (y1 - y0));
   view.s = s;
@@ -186,7 +197,8 @@ function spawnItem(e, i) {
   const def = ARCH[e.Id];
   if (!def) { console.warn('未知原型', e.Id); return; }
   const key = spriteKey(S.theme, e.Id, i);
-  const { dw, dh } = key ? fitBox(key, def.w, def.h) : { dw: def.w, dh: def.h };
+  const box = archDims(S.theme, e.Id);
+  const { dw, dh } = key ? fitBox(key, box.w, box.h) : box;
   const kind = def.body || 'dynamic';
   const body = world.createBody({ type: kind, position: Vec2(e.x, e.y), allowSleep: true, linearDamping: 0.05, angularDamping: 0.15 });
   const m = MAT[def.mat];
@@ -209,28 +221,29 @@ function loadLevel(idx, keepTheme = false) {
   hidePanel();
   S.levelIdx = idx;
   store.set('level', idx);
-  const lvl = LEVELS[idx], n = idx + 1;
+  const n = idx + 1;
+  const lvl = buildLevel(idx, S.themeOverride);
   S.level = lvl;
-  S.theme = S.themeOverride || lvl.Theme || 'kitchen';
+  S.theme = lvl.Theme;
   S.diff = lvl.Difficulty ?? difficultyOf(n);
   // 桌子：静态矩形，上表面 y = 0
   const tw = lvl.Table.w;
   const table = world.createBody({ type: 'static', position: Vec2(0, -0.25) });
-  table.createFixture({ shape: new planck.Box(tw / 2, 0.25), friction: 0.6 });
-  LAUNCH.x = -tw / 2 - 1.75; LAUNCH.y = -2.3;
+  table.createFixture({ shape: new planck.Box(tw / 2, 0.25), friction: 0.45 });   // 桌布略滑：打倒的东西容易滑下桌
+  // 碗口要高出桌面约 0.9 米、离桌边够远：太低太近时后坐一倾斜，番茄出膛就和桌角重叠被弹回
+  LAUNCH.x = -tw / 2 - 1.35; LAUNCH.y = -1.95;
   lvl.Entities.forEach(spawnItem);
   S.maxTop = Math.max(...S.items.map((it) => it.body.getPosition().y + it.dh / 2), 3);
   S.total = S.remaining = S.items.filter((it) => it.counted).length;
   S.shots = S.startShots = ddaShots(n, S.diff, lvl.MoveCount);
   Object.assign(S, { state: 'play', lastShotAt: -99, armed: null, continued: false, combo: 0, time: S.time });
   layout();
-  $('chapter').textContent = `${{ kitchen: '番茄厨房', drinks: '饮料吧', bakery: '烘焙坊' }[S.theme]} · ${lvl.name}`;
   const tag = $('tag');
   tag.classList.toggle('on', S.diff > 0);
-  $('tagImg').src = S.diff === 2 ? 'assets/ui/ui_tag_super.png' : 'assets/ui/ui_tag_hard.png';
-  $('tagText').textContent = S.diff === 2 ? '超难' : '困难';
+  $('tagImg').src = S.diff === 2 ? 'assets/ui/c_tag_super.png' : 'assets/ui/c_tag_hard.png';
+  $('tagText').textContent = S.diff === 2 ? 'SUPER HARD' : 'HARD';
   const unlocked = Object.values(BOOSTERS).find((b) => b.unlock === n);
-  toast(S.diff === 2 ? '超难关卡！' : S.diff === 1 ? '困难关卡' : unlocked ? `解锁新道具：${unlocked.name}` : lvl.name);
+  toast(S.diff === 2 ? 'SUPER HARD!' : S.diff === 1 ? 'HARD LEVEL' : unlocked ? `New booster: ${unlocked.name}!` : `${THEME_NAMES[S.theme]} · ${lvl.name}`);
   updateHud();
 }
 
@@ -238,11 +251,10 @@ function loadLevel(idx, keepTheme = false) {
 function updateHud() {
   $('lvlNum').textContent = S.levelIdx + 1;
   $('shots').textContent = S.shots;
-  $('barFill').style.width = `${S.total ? (100 * (S.total - S.remaining)) / S.total : 0}%`;
-  $('left').textContent = `${S.total - S.remaining}/${S.total}`;
+  $('left').textContent = S.remaining;
   for (const [k, b] of Object.entries(BOOSTERS)) {
     const el = $(b.btn), locked = S.levelIdx + 1 < b.unlock;
-    el.querySelector('.cnt').textContent = locked ? '🔒' : inv[k];
+    el.querySelector('.cnt span').textContent = locked ? '🔒' : inv[k] > 99 ? '99+' : inv[k];
     el.classList.toggle('locked', locked);
     el.classList.toggle('armed', S.armed === k);
     el.classList.toggle('empty', !locked && inv[k] <= 0);
@@ -258,8 +270,7 @@ function toast(text) {
 }
 function showPanel({ win, title, text, main, onMain, alt, onAlt }) {
   $('pTitleImg').classList.toggle('hidden', !win);
-  $('pTitle').classList.toggle('hidden', !!win);
-  $('pTitle').textContent = title || '';
+  $('pTitle').textContent = title || '';   // 标题写在弹窗顶部红缎带上
   $('pText').textContent = text;
   $('pMainText').textContent = main;
   $('pMain').onclick = () => { sfx.play('click'); hidePanel(); onMain(); };
@@ -295,28 +306,28 @@ function win() {
   for (let k = 0; k < 8; k++) emit((Math.random() - 0.5) * 8, 4 + Math.random() * 3, ['#e8261a', '#fff1d6', '#3daa5c', '#f6c33b'], 26, 5, 4, 2.4, 0.13);
   const last = S.levelIdx === LEVELS.length - 1;
   setTimeout(() => showPanel({
-    win: true,
-    text: `${S.level.name} 完成 · 剩余 ${S.shots} 颗番茄${S.diff === 2 ? '\n超难奖励：每种道具 +1' : ''}`,
-    main: last ? '从头再玩' : '下一关', onMain: () => loadLevel(S.levelIdx + 1),
+    win: true, title: `LEVEL ${S.levelIdx + 1}`,
+    text: `${S.level.name} cleared!\n${S.shots} tomato${S.shots === 1 ? '' : 'es'} left${S.diff === 2 ? '\nSuper Hard bonus: +1 every booster' : ''}`,
+    main: last ? 'PLAY AGAIN' : 'NEXT', onMain: () => loadLevel(S.levelIdx + 1),
   }), 900);
 }
 function lose() {
   S.state = 'lost';
   sfx.play('lose');
   showPanel({
-    title: '番茄用完了', text: `还差 ${S.remaining} 个没打下桌`,
-    main: '+5 颗番茄继续', onMain: () => {
+    title: 'OUT OF TOMATOES', text: `${S.remaining} item${S.remaining === 1 ? '' : 's'} still on the table`,
+    main: '+5 TOMATOES', onMain: () => {
       S.shots += 5; S.continued = true; S.state = 'play'; S.lastShotAt = S.time;
       ddaAdd(DDA.scoring.continue);   // 原作：花金币续关 = 积分 +5（视为更强的玩家）
       updateHud();
     },
-    alt: '重新开始', onAlt: () => { ddaAdd(DDA.scoring.loss); loadLevel(S.levelIdx, true); },
+    alt: 'RETRY', onAlt: () => { ddaAdd(DDA.scoring.loss); loadLevel(S.levelIdx, true); },
   });
 }
 
 // ---------- 发射器（料理机精灵）：弹簧驱动的倾斜 + 压扁回弹，动作克制 ----------
 const rig = { lean: 0, leanV: 0, squash: 0, squashV: 0, ammoPop: 1 };
-const LAUNCH_H = 2.5;                 // 料理机高度（米）
+const LAUNCH_H = 3.2;                 // 料理机高度（米）：照效果图放大，压在桌子左前方做前景
 const MUZZLE = { fx: 0.5, fy: 0.13 };  // 碗口在精灵里的位置（左→右 0..1，上→下 0..1）
 function launcherBox() {
   const im = IMG.launcher;
@@ -339,13 +350,23 @@ function aimAt(tx, ty) {
 
 // ---------- 发射 ----------
 const G = 18;
+const SHOT_SPEED = 22;   // 出膛速度（米/秒）：碗口贴近桌面高度，速度低了只能陡吊射、砸不下桌
+const SHOT_MAX = 30;     // 绕挡板时允许的最大出膛速度
 function solveLaunch(from, tx, ty, straight = false) {
   const dx = tx - from.x, dy = ty - from.y, dist = Math.hypot(dx, dy);
   if (straight) return { vx: (dx / dist) * 20, vy: (dy / dist) * 20, t: dist / 20 };
   const vel = (t) => ({ vx: dx / t, vy: (dy + 0.5 * G * t * t) / t, t });
-  // 挡板瞄准求解（学 Angry 的 AimBlockerBoxSolver）：落点不变，会撞挡板就逐步抬高抛物线
-  let t = Math.max(0.55, Math.min(1.3, dist / 13));
-  for (let k = 0; k < 14 && pathBlocked(from, vel(t)); k++) t += 0.07;
+  // 固定出膛速度：取速度不超过 SHOT_SPEED 的最平弹道（又快又狠；按距离定时间会在近距离变成软绵绵的吊射）
+  const speed = (t) => Math.hypot(dx / t, (dy + 0.5 * G * t * t) / t);
+  let t = 0.1;
+  while (t < 1.3 && speed(t) > SHOT_SPEED) t += 0.01;
+  if (!pathBlocked(from, vel(t))) return vel(t);
+  // 挡板瞄准求解（学 Angry 的 AimBlockerBoxSolver）：落点不变，默认弹道会撞挡板时，
+  // 从最平最快（不超过 SHOT_MAX）一路试到高吊射，取第一条不撞的——悬空挡板常常要从下面平射穿过去
+  for (let k = 0.06; k <= 2.4; k += 0.02) {
+    if (speed(k) > SHOT_MAX) continue;
+    if (!pathBlocked(from, vel(k))) return vel(k);
+  }
   return vel(t);
 }
 function pathBlocked(from, v) {
@@ -381,7 +402,7 @@ function fire(tx, ty) {
     const v = solveLaunch(m, tx, ty);
     const big = kind === 'big', tri = kind === 'tri';
     const r = big ? 0.62 : tri ? 0.24 : 0.32;
-    const mass = big ? 16 : tri ? 3 : 5;
+    const mass = big ? 18 : tri ? 3.8 : 6.5;
     for (const deg of tri ? [-6, 0, 6] : [0]) {
       const a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
       const body = world.createBody({ type: 'dynamic', position: Vec2(m.x, m.y), bullet: true, allowSleep: false });
@@ -502,8 +523,8 @@ canvas.addEventListener('pointercancel', () => (aiming = false));
 for (const [k, b] of Object.entries(BOOSTERS)) {
   $(b.btn).addEventListener('click', () => {
     sfx.unlock();
-    if (S.levelIdx + 1 < b.unlock) { toast(`第 ${b.unlock} 关解锁`); return; }
-    if (inv[k] <= 0) { toast('道具用完了'); return; }
+    if (S.levelIdx + 1 < b.unlock) { toast(`Unlocks at Level ${b.unlock}`); return; }
+    if (inv[k] <= 0) { toast('No boosters left'); return; }
     S.armed = S.armed === k ? null : k;
     sfx.play(S.armed === 'big' ? 'big_grow' : 'booster_tap');
     rig.squashV -= 4;
@@ -515,9 +536,19 @@ $('prev').onclick = () => loadLevel(S.levelIdx - 1);
 $('next').onclick = () => loadLevel(S.levelIdx + 1);
 $('theme').onclick = () => { const ids = ['kitchen', 'drinks', 'bakery']; S.themeOverride = ids[(ids.indexOf(S.theme) + 1) % 3]; loadLevel(S.levelIdx, true); };
 $('mute').onclick = () => { $('mute').textContent = sfx.toggleMute() ? '🔇' : '🔊'; };
-$('startBtn').onclick = () => { sfx.unlock(); sfx.play('click'); $('start').classList.add('hidden'); loadLevel(S.levelIdx); };
+// 设置面板（HUD 右端齿轮）：打开时暂停
+$('gear').onclick = () => { sfx.play('click'); S.paused = true; $('settings').classList.remove('hidden'); };
+$('sClose').onclick = () => { sfx.play('click'); S.paused = false; $('settings').classList.add('hidden'); };
+$('sRestart').onclick = () => { sfx.play('click'); S.paused = false; $('settings').classList.add('hidden'); loadLevel(S.levelIdx, true); };
+$('sSound').onclick = () => { const m = sfx.toggleMute(); $('sSoundText').textContent = m ? 'SOUND: OFF' : 'SOUND: ON'; if (!m) sfx.play('click'); };
+$('startBtn').onclick = () => { sfx.unlock(); sfx.play('click'); leaveStart(); };
 addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') loadLevel(S.levelIdx, true); });
 addEventListener('resize', layout);
+function leaveStart() {
+  $('start').classList.add('hidden');
+  document.body.classList.remove('on-start');
+  loadLevel(S.levelIdx);
+}
 
 // ---------- 模拟 ----------
 function settled() {
@@ -704,6 +735,13 @@ function render() {
   }
   ctx.restore();
 
+  // 前景番茄堆（照效果图）：贴在游戏区右下角、道具栏上方，压在桌子前面
+  const fg = IMG.fg_tomatoes;
+  if (fg) {
+    const w = Math.min(VW * 0.46, 260), h = w * fg.height / fg.width, bottom = VH - cssPx('--bar-h') + h * 0.28;
+    ctx.save(); ctx.translate(VW + w * 0.08, bottom - h); ctx.scale(-1, 1); ctx.drawImage(fg, 0, 0, w, h); ctx.restore();
+  }
+
   // 暗角：四角压暗，画面更聚焦、更"贵"
   const vg = ctx.createRadialGradient(VW / 2, VH * 0.48, Math.min(VW, VH) * 0.35, VW / 2, VH * 0.48, Math.max(VW, VH) * 0.75);
   vg.addColorStop(0, 'rgba(0,0,0,0)');
@@ -740,7 +778,7 @@ function frame(now) {
   let dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   if (S.hitstop > 0) { S.hitstop -= dt; dt *= 0.12; }   // 打击停顿
-  if (S.level && S.state !== 'start') {
+  if (S.level && S.state !== 'start' && !S.paused) {
     acc += dt;
     while (acc >= 1 / 60) { step(1 / 60); acc -= 1 / 60; }
   }
@@ -753,25 +791,29 @@ if (params.has('silent')) { sfx.toggleMute(); $('mute').textContent = '🔇'; }
 sfx.loadSamples();
 layout();
 await loadAssets();
-if (params.has('play')) { $('start').classList.add('hidden'); loadLevel(S.levelIdx); }
+setDims(archDims);
+if (params.has('play')) leaveStart();
 requestAnimationFrame(frame);
 
 // ---------- 测试接口：自动化试玩 / 机器人校准 ----------
 window.__game = {
   S, inv, loadLevel,
-  start: () => { $('start').classList.add('hidden'); loadLevel(S.levelIdx); },
+  start: () => leaveStart(),
   arm: (k) => { S.armed = k; },
   fireAt: (x, y) => fire(x, y),
   setTheme: (t) => { S.themeOverride = t; loadLevel(S.levelIdx, true); },
   tick(sec) { for (let k = 0; k < Math.round(sec * 60); k++) step(1 / 60); render(); },
   // 机器人：打最高的物件；同一目标连续两发没进展就登记为死角换目标（学 Angry 的 AutoplayDeadAimRegistry）
   autoplay(list, ammo = null) {
-    $('start').classList.add('hidden');
+    if (document.body.classList.contains('on-start')) leaveStart();
+    const invBefore = { ...inv };   // 机器人打超难关会拿奖励，测完恢复，不污染玩家库存
     const out = {};
     for (const n of list) {
+      if (ammo === 'real') store.set('dda', 0);   // 实测按"普通玩家"测：清零动态难度积分，否则连胜会把难关炮弹扣掉最多 42%
       loadLevel(n - 1);
-      S.shots = ammo ?? 40;
-      const budget = ammo ?? 25;
+      // ammo：null = 给足弹药测"需要几发"；'real' = 用关卡真实炮弹数测"能不能过"；数字 = 指定弹药
+      if (ammo !== 'real') S.shots = ammo ?? 40;
+      const budget = ammo === 'real' ? S.shots : ammo ?? 25;
       let used = 0;
       const dead = new Map();
       while (S.remaining > 0 && used < budget && S.shots > 0) {
@@ -791,6 +833,9 @@ window.__game = {
       this.tick(2.5);
       out[n] = { need: S.remaining <= 0 ? used : 99, total: S.total, left: S.remaining, diff: S.diff };
     }
+    Object.assign(inv, invBefore);
+    store.set('inv', inv);
+    updateHud();
     return out;
   },
 };

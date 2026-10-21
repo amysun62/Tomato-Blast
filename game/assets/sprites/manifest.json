@@ -1,0 +1,186 @@
+{
+ "bakery_ball": {
+  "w": 478,
+  "h": 512
+ },
+ "bakery_boom": {
+  "w": 131,
+  "h": 512
+ },
+ "bakery_bottle": {
+  "w": 164,
+  "h": 512
+ },
+ "bakery_box": {
+  "w": 503,
+  "h": 512
+ },
+ "bakery_disc": {
+  "w": 512,
+  "h": 126
+ },
+ "bakery_drum": {
+  "w": 512,
+  "h": 304
+ },
+ "bakery_heavy": {
+  "w": 512,
+  "h": 441
+ },
+ "bakery_jar_0": {
+  "w": 335,
+  "h": 512
+ },
+ "bakery_jar_1": {
+  "w": 362,
+  "h": 512
+ },
+ "bakery_jar_2": {
+  "w": 367,
+  "h": 512
+ },
+ "bakery_pillar": {
+  "w": 122,
+  "h": 512
+ },
+ "bakery_plank": {
+  "w": 512,
+  "h": 71
+ },
+ "bakery_slick": {
+  "w": 491,
+  "h": 512
+ },
+ "drinks_ball": {
+  "w": 470,
+  "h": 512
+ },
+ "drinks_boom": {
+  "w": 272,
+  "h": 512
+ },
+ "drinks_bottle": {
+  "w": 136,
+  "h": 512
+ },
+ "drinks_box": {
+  "w": 487,
+  "h": 512
+ },
+ "drinks_disc": {
+  "w": 512,
+  "h": 280
+ },
+ "drinks_drum_0": {
+  "w": 304,
+  "h": 512
+ },
+ "drinks_drum_1": {
+  "w": 278,
+  "h": 512
+ },
+ "drinks_drum_2": {
+  "w": 282,
+  "h": 512
+ },
+ "drinks_heavy": {
+  "w": 512,
+  "h": 464
+ },
+ "drinks_jar_0": {
+  "w": 512,
+  "h": 486
+ },
+ "drinks_jar_1": {
+  "w": 503,
+  "h": 512
+ },
+ "drinks_jar_2": {
+  "w": 512,
+  "h": 485
+ },
+ "drinks_pillar": {
+  "w": 113,
+  "h": 512
+ },
+ "drinks_plank": {
+  "w": 512,
+  "h": 41
+ },
+ "drinks_slick": {
+  "w": 511,
+  "h": 512
+ },
+ "kitchen_ball": {
+  "w": 498,
+  "h": 512
+ },
+ "kitchen_boom": {
+  "w": 305,
+  "h": 512
+ },
+ "kitchen_bottle": {
+  "w": 158,
+  "h": 512
+ },
+ "kitchen_box": {
+  "w": 512,
+  "h": 495
+ },
+ "kitchen_disc": {
+  "w": 512,
+  "h": 148
+ },
+ "kitchen_drum": {
+  "w": 415,
+  "h": 512
+ },
+ "kitchen_heavy": {
+  "w": 489,
+  "h": 512
+ },
+ "kitchen_jar_0": {
+  "w": 512,
+  "h": 472
+ },
+ "kitchen_jar_1": {
+  "w": 512,
+  "h": 499
+ },
+ "kitchen_jar_2": {
+  "w": 512,
+  "h": 475
+ },
+ "kitchen_pillar": {
+  "w": 75,
+  "h": 512
+ },
+ "kitchen_plank": {
+  "w": 512,
+  "h": 54
+ },
+ "kitchen_slick": {
+  "w": 512,
+  "h": 509
+ },
+ "launcher": {
+  "w": 417,
+  "h": 512
+ },
+ "table_bakery": {
+  "w": 512,
+  "h": 196
+ },
+ "table_drinks": {
+  "w": 512,
+  "h": 190
+ },
+ "table_kitchen": {
+  "w": 512,
+  "h": 180
+ },
+ "wall": {
+  "w": 69,
+  "h": 512
+ }
+}
