@@ -747,6 +747,7 @@ function render() {
   vg.addColorStop(0, 'rgba(0,0,0,0)');
   vg.addColorStop(1, `rgba(40,10,0,${S.diff === 2 ? 0.55 : S.diff === 1 ? 0.45 : 0.32})`);
   ctx.fillStyle = vg; ctx.fillRect(0, 0, VW, VH);
+  if (window.__overlay) window.__overlay(ctx, VW, VH);   // 宣传片录制：字幕 / Logo 叠加层
 }
 
 function drawLauncher() {
@@ -802,6 +803,8 @@ window.__game = {
   arm: (k) => { S.armed = k; },
   fireAt: (x, y) => fire(x, y),
   setTheme: (t) => { S.themeOverride = t; loadLevel(S.levelIdx, true); },
+  load: (idx, theme) => { S.themeOverride = theme || null; loadLevel(idx, !!theme); },
+  items: () => S.items,
   tick(sec) { for (let k = 0; k < Math.round(sec * 60); k++) step(1 / 60); render(); },
   // 机器人：打最高的物件；同一目标连续两发没进展就登记为死角换目标（学 Angry 的 AutoplayDeadAimRegistry）
   autoplay(list, ammo = null) {
