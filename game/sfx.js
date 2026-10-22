@@ -105,7 +105,12 @@ const SYNTH = {
 };
 
 // gap：同一个音效的最短间隔，避免一堆物件同时碰撞时爆音
+// 宣传片录制用：每个音效事件回调一次（静音时也回调），由录制脚本按游戏时间记下来再离线合成音效轨
+let onPlay = null;
+export function setPlayHook(fn) { onPlay = fn; }
+
 export function play(name, { vol = 1, rate = 1, jitter = 0.06, gap = 0.035 } = {}) {
+  if (onPlay) onPlay(name, vol, rate);
   if (muted || ctx.state !== 'running') return;
   const t = ctx.currentTime;
   if (lastPlay[name] != null && t - lastPlay[name] < gap) return;

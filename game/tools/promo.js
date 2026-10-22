@@ -1,9 +1,12 @@
 // 宣传片录制：在游戏页面控制台执行 `(await import('./tools/promo.js')).record()`
 // 逐帧（30fps）驱动游戏，把画面连同字幕 / Logo 叠加层一起传给本地帧服务器（scratchpad/tools/frame_server.py，端口 8766）
-// 之后用 ffmpeg 把帧序列 + 背景音乐合成视频
+// 之后用 ffmpeg 把帧序列 + 背景音乐 + 音效轨合成视频
+// 音效：录制时通过 sfx.setPlayHook 按帧时间记下每个音效事件（window.__promoSfx），再离线合成音效轨（tools/promo_sfx.py）
+import * as sfx from '../sfx.js';
 const FPS = 30;
 const G = window.__game;
 const canvas = document.getElementById('c');
+const comp = document.createElement('canvas');   // 合成画布：3D 画面 + 字幕叠加层
 const load = (src) => new Promise((r) => { const i = new Image(); i.onload = () => r(i); i.src = src; });
 
 const clamp01 = (t) => Math.min(1, Math.max(0, t));
@@ -74,7 +77,7 @@ function overlay(ctx, W, H) {
 function pick(kind) {
   const live = G.items().filter((i) => !i.dead && !i.cleared && i.counted);
   if (!live.length) return null;
-  const P = (i) => i.body.getPosition();
+  const P = (i) => G.pos(i);
   if (kind === 'boom') { const b = live.find((i) => i.def.explosive); if (b) return P(b); }
   if (kind === 'top') return P(live.reduce((a, b) => (P(b).y > P(a).y ? b : a)));
   const ys = live.map((i) => P(i).y).sort((a, b) => a - b);
@@ -87,7 +90,14 @@ function upload(i) {
   const x = new XMLHttpRequest();
   x.open('POST', `http://127.0.0.1:8766/frame?i=${i}`, false);
   x.setRequestHeader('Content-Type', 'text/plain');
-  x.send(canvas.toDataURL('image/jpeg', 0.92));
+  // 3D 画布同一任务里刚渲染完，直接 drawImage 能拿到画面；字幕按 CSS 像素画在上面
+  comp.width = canvas.width; comp.height = canvas.height;
+  const ctx = comp.getContext('2d');
+  ctx.drawImage(canvas, 0, 0);
+  const k = canvas.width / innerWidth;
+  ctx.setTransform(k, 0, 0, k, 0, 0);
+  overlay(ctx, innerWidth, innerHeight);
+  x.send(comp.toDataURL('image/jpeg', 0.92));
 }
 
 // 分段录制：先 prepare()，再反复调用 recordChunk(帧数) 直到返回 true（全部录完）
@@ -96,13 +106,14 @@ export async function prepare() {
   await document.fonts.load('40px "Lilita One"');
   IMG = { logo: await load('assets/ui/logo.png'), btn: await load('assets/ui/c_btn_green.png') };
   R.invBefore = { ...G.inv };
-  window.__overlay = overlay;
+  window.__promoSfx = [];
+  sfx.setPlayHook((name, vol, rate) => window.__promoSfx.push([+(R.i / FPS).toFixed(3), name, +vol.toFixed(2), +rate.toFixed(2)]));
   Object.assign(R, { shot: -1, f: 0, n: 0, i: 0 });
   return SHOTS.reduce((s, x) => s + Math.round(x.dur * FPS), 0);
 }
 function startShot(k) {
   const shot = SHOTS[k];
-  G.load(shot.level, shot.theme);
+  G.load(shot.level, shot.theme);   // 0 起算
   G.S.shots = 99;
   G.tick(0.4);   // 先让堆叠稳定（不录）
   o = { t: 0, caps: shot.caps, flash: shot.flash };
@@ -114,9 +125,9 @@ export function recordChunk(frames = 120) {
   for (let c = 0; c < frames; c++) {
     if (R.shot < 0 || R.f >= R.n) {
       if (R.shot + 1 >= SHOTS.length) {
-        window.__overlay = null;
+        sfx.setPlayHook(null);
         Object.assign(G.inv, R.invBefore);   // 录制时用掉的道具还回去，连存档一起
-        try { localStorage.setItem('tomato2d_inv', JSON.stringify(G.inv)); } catch { /* 隐私模式 */ }
+        try { localStorage.setItem('tomato3d_inv', JSON.stringify(G.inv)); } catch { /* 隐私模式 */ }
         return { done: true, frames: R.i };
       }
       startShot(R.shot + 1);
@@ -129,7 +140,7 @@ export function recordChunk(frames = 120) {
       if (!p) continue;
       G.S.lastShotAt = -99;
       if (a.booster) G.arm(a.booster);
-      G.fireAt(p.x, p.y);
+      G.fireAt(p.x, p.y, p.z);
     }
     G.tick(1 / FPS);
     upload(R.i++);

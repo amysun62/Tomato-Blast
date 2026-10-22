@@ -80,9 +80,12 @@
 
   /* ---------- 底部道具栏：白色气泡 c_bubble + 绿色角标 c_badge，整排居中等距 ---------- */
   #bar { position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--bar-h) + env(safe-area-inset-bottom)); padding: 0 14px calc(env(safe-area-inset-bottom) + 12px);
-    display: flex; justify-content: center; align-items: flex-end; gap: clamp(18px, 7vw, 40px); pointer-events: none; }
-  .boost { pointer-events: auto; position: relative; width: 74px; display: flex; flex-direction: column; align-items: center; gap: 5px; background: none; border: 0; padding: 0; cursor: pointer; }
-  .boost .btn { position: relative; width: 74px; aspect-ratio: 488 / 512; transition: transform .12s; filter: drop-shadow(0 5px 8px rgba(70,30,10,.3)); }
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; pointer-events: none; }
+  #bar .cannon-gap { flex: 0 0 min(42vw, 20vh); }   /* 中间留给大炮：道具左二右一 */
+  #bar .side { display: flex; gap: 8px; align-items: flex-end; flex: 1; }
+  #bar .side.r { justify-content: flex-end; }
+  .boost { pointer-events: auto; position: relative; width: 58px; display: flex; flex-direction: column; align-items: center; gap: 5px; background: none; border: 0; padding: 0; cursor: pointer; }
+  .boost .btn { position: relative; width: 58px; aspect-ratio: 488 / 512; transition: transform .12s; filter: drop-shadow(0 5px 8px rgba(70,30,10,.3)); }
   .boost .btn > img { position: absolute; inset: 0; width: 100%; height: 100%; }
   .boost .btn .icon { position: absolute; left: 17%; top: 17%; width: 66%; height: 66%; object-fit: contain; }
   .boost .cnt { position: absolute; right: -4px; bottom: -2px; width: 30px; height: 30px; }
@@ -126,7 +129,10 @@
   #nav button { pointer-events: auto; min-width: 34px; height: 30px; padding: 0 8px; border-radius: 8px; border: 1px solid #fff; background: rgba(0,0,0,.4); color: #fff; font-size: 13px; }
 </style>
 <script type="importmap">
-{ "imports": { "planck": "https://cdn.jsdelivr.net/npm/planck@1.0.6/dist/planck.mjs" } }
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "cannon-es": "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"
+} }
 </script>
 </head>
 <body class="on-start">
@@ -147,9 +153,13 @@
 <div id="combo"><b class="stroke" id="comboNum"></b><img id="comboImg" alt=""></div>
 
 <div id="bar">
+  <div class="side">
   <button class="boost" id="bTri" data-k="tri"><div class="btn"><img src="assets/ui/c_bubble.png" alt=""><img class="icon" src="assets/ui/icon_triple.png" alt=""><div class="cnt"><img src="assets/ui/c_badge.png" alt=""><span>3</span></div></div><em class="stroke">Triple</em></button>
   <button class="boost" id="bRocket" data-k="rocket"><div class="btn"><img src="assets/ui/c_bubble.png" alt=""><img class="icon" src="assets/ui/icon_rocket.png" alt=""><div class="cnt"><img src="assets/ui/c_badge.png" alt=""><span>3</span></div></div><em class="stroke">Rocket</em></button>
-  <button class="boost" id="bBig" data-k="big"><div class="btn"><img src="assets/ui/c_bubble.png" alt=""><img class="icon" src="assets/ui/icon_melon.png" alt=""><div class="cnt"><img src="assets/ui/c_badge.png" alt=""><span>3</span></div></div><em class="stroke">Melon</em></button>
+  </div>
+  <div class="cannon-gap"></div>
+  <div class="side r">
+  <button class="boost" id="bBig" data-k="big"><div class="btn"><img src="assets/ui/c_bubble.png" alt=""><img class="icon" src="assets/ui/icon_melon.png" alt=""><div class="cnt"><img src="assets/ui/c_badge.png" alt=""><span>3</span></div></div><em class="stroke">Melon</em></button></div>
 </div>
 
 <div id="nav"><button id="prev">‹</button><button id="next">›</button><button id="theme">Skin</button><button id="mute">🔊</button></div>
@@ -188,6 +198,6 @@
   <button class="pbtn" id="startBtn"><img src="assets/ui/c_btn_green.png" alt=""><span class="stroke">PLAY</span></button>
 </div>
 
-<script type="module" src="./game.js"></script>
+<script type="module" src="./game3d.js"></script>
 </body>
 </html>
