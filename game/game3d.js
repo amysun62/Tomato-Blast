@@ -3,7 +3,7 @@
 // 画面：物件是 AI 海报级精灵卡片（正对镜头，按刚体真实姿态做"侧倒旋转 + 前后倒透视压缩"）；桌子/地板是 3D
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import { LEVELS, ARCH, difficultyOf, THEME_NAMES, buildLevel, setDims } from './levels.js';
+import { LEVELS, ARCH, difficultyOf, buildLevel, setDims } from './levels.js';
 import * as sfx from './sfx.js';
 
 const params = new URLSearchParams(location.search);
@@ -53,14 +53,19 @@ async function loadAssets() {
     jobs.push(loadTex(`bg_${t}_v`, `assets/bg_${t}_v.jpg`));
     jobs.push(loadTex(`floor_${t}`, `assets/floor_${t}.jpg`));
   }
-  for (const k of ['launcher_cannon', 'launcher_stage', 'smoke']) jobs.push(loadTex(k, `assets/sprites/${k}.png`));
+  for (const k of ['launcher_cannon', 'smoke']) jobs.push(loadTex(k, `assets/sprites/${k}.png`));
+  jobs.push(loadTex('launcher_stage', `assets/sprites/${STAGE}.png`));
   for (const k of ['icon_tomato', 'icon_triple', 'icon_melon', 'icon_rocket', 'fg_tomatoes']) jobs.push(loadTex(k, `assets/ui/${k}.png`));
   await Promise.all(jobs);
 }
 
 // 某主题某原型对应的精灵键（多变体轮换）
+// 新原型还没出图时借用相近原型的图
+const SPRITE_FALLBACK = { pinata: 'ball', bouncer: 'drum', hammer: 'heavy' };
 function spriteKey(theme, arch, i) {
   if (arch === 'wall' || arch === 'slider') return MANIFEST.wall ? 'wall' : null;
+  if (!MANIFEST[`${theme}_${arch}`] && !MANIFEST[`${theme}_${arch}_0`] && !MANIFEST[arch] && SPRITE_FALLBACK[arch]) return spriteKey(theme, SPRITE_FALLBACK[arch], i);
+  if (MANIFEST[arch]) return arch;   // 不分主题的共用图（如摆锤）
   const base = `${theme}_${arch}`;
   const vs = [0, 1, 2].filter((v) => MANIFEST[`${base}_${v}`]);
   if (vs.length) return `${base}_${vs[i % vs.length]}`;
@@ -85,7 +90,8 @@ function fitBox(key, w, h) {
 
 // ---------- 渲染器 / 场景 ----------
 const canvas = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+// 小游戏平台的 Canvas 可能只有 WebGL 1（TikTok 文档写的是 1.0），适配层会把 context 传进来
+const renderer = window.__glContext ? new THREE.WebGL1Renderer({ canvas, context: window.__glContext, antialias: true }) : new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(2, Math.max(1.5, devicePixelRatio || 1)));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -104,7 +110,8 @@ const ui = new THREE.Scene();
 const uiCam = new THREE.OrthographicCamera(0, 1, 1, 0, -10, 10);
 
 const FLOOR_Y = -2.3;    // 地板高度：桌子用桌腿站在上面
-const TABLE_D = 3.2;     // 桌面纵深
+const HAMMER_L = 2.6;    // 摆锤杆长
+let TABLE_D = 3.2;       // 桌面纵深（每关可设 Table.d，学原作 3–4 米深、物件摆 2–4 排）
 const levelGroup = new THREE.Group();
 scene.add(levelGroup);
 
@@ -122,7 +129,7 @@ function ginghamTex(color) {
 const CLOTH = { kitchen: 'rgba(214,28,18,.75)', drinks: 'rgba(30,110,220,.7)', bakery: 'rgba(240,100,150,.7)' };
 const FLOOR_FALLBACK = { kitchen: 0xc8935a, drinks: 0xbfe3f5, bakery: 0xf3d1d6 };
 
-function buildStage(theme, tw) {
+function buildStage(theme, tw, round = false) {
   // 背景墙：远处一块竖直面板；地板：从脚下延伸到墙根（有透视、能落地）
   // 竖屏用竖版背景图；墙面按镜头在那个深度的实际视野铺满，墙根埋在地板后面（地板盖住图里自带的地面）
   const bg = TEX[`bg_${theme}_${VH > VW ? 'v' : 'h'}`];
@@ -147,6 +154,22 @@ function buildStage(theme, tw) {
   const clothTex = ginghamTex(CLOTH[theme]);
   const top = clothTex.clone(); top.repeat.set(tw / 1.2, TABLE_D / 1.2); top.needsUpdate = true;
   const cloth = new THREE.MeshStandardMaterial({ map: top, roughness: 0.8 });
+  if (round) {
+    // 圆桌（原作 Table_Round，转桌也用它）：圆台面 + 一圈垂下的桌布 + 中间一根粗桌腿；台面会跟着物理转
+    const R = tw / 2;
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 0.25, 64), cloth);
+    disc.position.set(0, -0.125, 0); disc.receiveShadow = disc.castShadow = true;
+    levelGroup.add(disc);
+    const rs = clothTex.clone(); rs.repeat.set(Math.PI * tw / 1.2, 0.75 / 1.2); rs.needsUpdate = true;
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(R + 0.02, R + 0.12, 0.75, 64, 1, true), new THREE.MeshStandardMaterial({ map: rs, roughness: 0.85, side: THREE.DoubleSide }));
+    ring.position.set(0, -0.375 - 0.12, 0);
+    levelGroup.add(ring);
+    const wood = new THREE.MeshStandardMaterial({ color: 0x9a5f2c, roughness: 0.55 });
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.5, -FLOOR_Y - 0.25, 24), wood);
+    post.position.set(0, (FLOOR_Y - 0.25) / 2, 0); post.castShadow = true;
+    levelGroup.add(post);
+    return disc;
+  }
   const slab = new THREE.Mesh(new THREE.BoxGeometry(tw, 0.25, TABLE_D), cloth);
   slab.position.set(0, -0.125, 0); slab.receiveShadow = slab.castShadow = true;
   levelGroup.add(slab);
@@ -187,20 +210,22 @@ const MAT = {   // 摩擦 / 弹性 / 命中音效 / 掉落音效
   metal: { f: 0.35, r: 0.08, hit: 'hit_tin', fall: 'fall_tin' },
   glass: { f: 0.35, r: 0.06, hit: 'hit_glass', fall: 'fall_tin' },
   soft: { f: 0.5, r: 0.1, hit: 'hit_soft', fall: 'fall_wood' },
+  bouncy: { f: 0.4, r: 0.85, hit: 'hit_soft', fall: 'fall_wood' },   // 弹跳柱（原作 BouncerCylinder）
 };
 let world, PM;
 function newWorld() {
   world = new CANNON.World({ gravity: new CANNON.Vec3(0, -18, 0) });
   world.allowSleep = true;
   world.broadphase = new CANNON.SAPBroadphase(world);
-  world.solver.iterations = 20;
+  world.solver.iterations = 10;   // 85 个物件时 20 次太重；10 次堆叠仍稳（实测）
   PM = {};
   for (const k of [...Object.keys(MAT), 'ball', 'table']) PM[k] = new CANNON.Material(k);
   const fr = (k) => (MAT[k] ? MAT[k].f : k === 'table' ? 0.45 : 0.35);
   const keys = Object.keys(PM);
   for (let i = 0; i < keys.length; i++) for (let j = i; j < keys.length; j++) {
     world.addContactMaterial(new CANNON.ContactMaterial(PM[keys[i]], PM[keys[j]], {
-      friction: Math.sqrt(fr(keys[i]) * fr(keys[j])), restitution: keys[i] === 'ball' || keys[j] === 'ball' ? 0.15 : 0.04,
+      friction: Math.sqrt(fr(keys[i]) * fr(keys[j])),
+      restitution: keys[i] === 'bouncy' || keys[j] === 'bouncy' ? 0.85 : keys[i] === 'ball' || keys[j] === 'ball' ? 0.15 : 0.04,
     }));
   }
   const ground = new CANNON.Body({ type: CANNON.Body.STATIC, material: PM.table, shape: new CANNON.Plane() });
@@ -212,6 +237,17 @@ function newWorld() {
       if (it.arch !== 'slider' || it.dead) continue;
       const { amp = 1.4, cycle = 2.6 } = it.custom, w = (2 * Math.PI) / cycle;
       it.body.velocity.set(amp * w * Math.cos(w * S.time), 0, 0);   // 主观视角下左右扫
+    }
+    // 摆锤（原作 Hammer）：挂在上方的锤头来回摆，运动学刚体按摆角算位置和速度
+    for (const it of S.items) {
+      if (it.arch !== 'hammer' || it.dead) continue;
+      const { swing = 0.9, cycle = 3, phase = 0 } = it.custom, w = (2 * Math.PI) / cycle;
+      const th = swing * Math.sin(w * S.time + phase), dth = swing * w * Math.cos(w * S.time + phase);
+      const P = it.pivot, L = HAMMER_L;
+      it.body.position.set(P.x + L * Math.sin(th), P.y - L * Math.cos(th), P.z);
+      it.body.velocity.set(L * Math.cos(th) * dth, L * Math.sin(th) * dth, 0);
+      it.body.quaternion.setFromEuler(0, 0, th);
+      it.body.angularVelocity.set(0, 0, dth);
     }
   });
 }
@@ -254,24 +290,27 @@ function spawnItem(e, i) {
   const box = archDims(S.theme, e.Id);
   let { dw, dh } = key ? fitBox(key, box.w, box.h) : { dw: box.w, dh: box.h };
   const kind = def.body || 'dynamic';
-  const blocker = kind !== 'dynamic';
+  const hammer = e.Id === 'hammer';
+  const blocker = kind !== 'dynamic' && !hammer;
   // 挡板在主观视角下是一块横着挡在桌前的托盘
-  let x = e.x, y = e.y, z = 0, dd = Math.min(dw, 1);
+  let x = e.x, y = e.y, z = e.z ?? 0, dd = Math.min(dw, 1);
   // 挡板抬高到桌面上方 2.3 米起：挡住塔的上半截，矮处留一条能斜着打进去的缝（太低会把后排矮物件封死）
   if (blocker) { [dw, dh] = [2.2, 1.2]; dd = 0.18; x = e.Id === 'slider' ? 0 : e.x + 1.4; y = e.y + 0.6; z = TABLE_D / 2 + 0.5; }
   let shape;
   if (def.round) shape = new CANNON.Sphere(Math.min(dw, dh) / 2 * 0.96);
-  else if (['drum', 'jar', 'bottle', 'boom', 'pillar', 'disc'].includes(e.Id)) shape = new CANNON.Cylinder(dw / 2, dw / 2, dh, 14);
+  else if (['drum', 'jar', 'bottle', 'boom', 'pillar', 'disc'].includes(e.Id)) shape = new CANNON.Cylinder(dw / 2, dw / 2, dh, 8);   // 8 边：碰撞成本约为 14 边的一半，精灵图看不出差别
   else shape = new CANNON.Box(new CANNON.Vec3(dw / 2, dh / 2, dd / 2));
+  if (hammer) { [dw, dh] = [1.4, 1.36]; shape = new CANNON.Box(new CANNON.Vec3(0.65, 0.37, 0.37)); }   // 图里锤头在下半、柄朝上
   const body = new CANNON.Body({
-    mass: blocker ? 0 : def.mass,
+    mass: blocker || hammer ? 0 : def.mass,
     type: kind === 'static' ? CANNON.Body.STATIC : kind === 'kinematic' ? CANNON.Body.KINEMATIC : CANNON.Body.DYNAMIC,
     material: PM[def.mat], position: new CANNON.Vec3(x, y, z), shape,
   });
   body.linearDamping = 0.05; body.angularDamping = 0.15; body.sleepSpeedLimit = 0.2; body.sleepTimeLimit = 0.5;
   if (kind === 'kinematic') body.allowSleep = false;
   world.addBody(body);
-  if (kind === 'dynamic') body.sleep();   // 开局休眠：不被碰就不会自己塌（原作 ItemSleepWake 同理）
+  // 开局休眠：不被碰就不会自己塌（原作 ItemSleepWake 同理）；转桌上的不能睡，否则桌子转走了它们还悬在原地
+  if (kind === 'dynamic') { if (S.level.Table.rot) body.allowSleep = false; else body.sleep(); }
   const mat = new THREE.SpriteMaterial({ map: key ? TEX[key] : null, color: key ? 0xffffff : 0xc98a4b, alphaTest: 0.35 });
   if (blocker) mat.rotation = Math.PI / 2;
   const sprite = new THREE.Sprite(mat);
@@ -280,6 +319,14 @@ function spawnItem(e, i) {
   const shadow = new THREE.Mesh(shadowGeo, shadowMat);
   levelGroup.add(shadow);
   const it = { kind: 'item', arch: e.Id, def, body, sprite, shadow, key, dw, dh, mass: def.mass || 0, counted: def.counted !== false, cleared: false, clearedAt: 0, dead: false, exploding: false, custom: e.Custom || {}, blocker };
+  if (hammer) {
+    sprite.center.set(0.5, 0.27);   // 锤头中心对齐刚体，柄往上连杆
+    // 摆锤挂点在锤头正上方 HAMMER_L 处，画一根细杆连到挂点
+    it.pivot = new THREE.Vector3(x, y + HAMMER_L, z);
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, HAMMER_L, 8), new THREE.MeshStandardMaterial({ color: 0x8a5a2b, roughness: 0.5 }));
+    levelGroup.add(rod);
+    it.rod = rod;
+  }
   body.item = it;
   body.addEventListener('collide', (ev) => {
     const v = Math.abs(ev.contact.getImpactVelocityAlongNormal());
@@ -295,18 +342,28 @@ function loadLevel(idx, keepTheme = false) {
   clearLevel();
   hidePanel();
   S.levelIdx = idx;
+  S.time = 0;   // 每关开局时钟归零：摆锤 / 移动挡板 / 转桌的相位每次都一样，机器人测的就是玩家开局看到的那一局
   store.set('level', idx);
   const n = idx + 1;
-  const lvl = buildLevel(idx, S.themeOverride);
+  const lvl = S.customLevel || buildLevel(idx, S.themeOverride);
+  S.customLevel = null;
+  TABLE_D = lvl.Table.d || 3.2;
   S.level = lvl;
   S.theme = lvl.Theme;
   S.diff = lvl.Difficulty ?? difficultyOf(n);
   const tw = lvl.Table.w;
   layout();   // 先定镜头，背景墙要按视野铺满
-  tableMesh = buildStage(S.theme, tw);
-  const table = new CANNON.Body({ type: CANNON.Body.STATIC, material: PM.table, shape: new CANNON.Box(new CANNON.Vec3(tw / 2, 0.125, TABLE_D / 2)) });
+  // 转桌一律做成圆桌（方桌转起来四角会扫出画面）；转速用原作该关的度/秒
+  const round = !!(lvl.Table.round || lvl.Table.rot);
+  tableMesh = buildStage(S.theme, tw, round);
+  const table = new CANNON.Body({
+    type: lvl.Table.rot ? CANNON.Body.KINEMATIC : CANNON.Body.STATIC, material: PM.table,
+    shape: round ? new CANNON.Cylinder(tw / 2, tw / 2, 0.25, 32) : new CANNON.Box(new CANNON.Vec3(tw / 2, 0.125, TABLE_D / 2)),
+  });
   table.position.set(0, -0.125, 0);
+  if (lvl.Table.rot) { table.angularVelocity.set(0, THREE.MathUtils.degToRad(lvl.Table.rot), 0); table.allowSleep = false; }
   world.addBody(table);
+  S.tableBody = table;
   lvl.Entities.forEach(spawnItem);
   S.total = S.remaining = S.items.filter((it) => it.counted).length;
   S.shots = S.startShots = ddaShots(n, S.diff, lvl.MoveCount);
@@ -316,7 +373,7 @@ function loadLevel(idx, keepTheme = false) {
   $('tagImg').src = S.diff === 2 ? 'assets/ui/c_tag_super.png' : 'assets/ui/c_tag_hard.png';
   $('tagText').textContent = S.diff === 2 ? 'SUPER HARD' : 'HARD';
   const unlocked = Object.values(BOOSTERS).find((b) => b.unlock === n);
-  toast(S.diff === 2 ? 'SUPER HARD!' : S.diff === 1 ? 'HARD LEVEL' : unlocked ? `New booster: ${unlocked.name}!` : `${THEME_NAMES[S.theme]} · ${lvl.name}`);
+  toast(S.diff === 2 ? 'SUPER HARD!' : S.diff === 1 ? 'HARD LEVEL' : unlocked ? `New booster: ${unlocked.name}!` : lvl.name);
   updateHud();
 }
 
@@ -424,12 +481,14 @@ function layout() {
   // 旋转底盘（学原版）：同心环带圆台，圆心正对炮的底座，整台炮落在内圈里，屏幕上只露出向上拱的几道弧
   const st = TEX.launcher_stage;
   if (st) {
-    const sw = VW * 1.5, sh = sw * st.image.height / st.image.width;
+    // 按原作商店图量的比例：最外圈弧在正中离底边约 12% 屏高、到屏幕两侧几乎贴底（约 3%）→ 盘宽≈屏宽，竖向再压扁到 0.8
+    const sw = VW * 1.03, sh = sw * st.image.height / st.image.width * 0.8;
     uiStage.scale.set(sw, sh, 1);
     const cy = VH - L.h * 0.08;   // 圆心（盘面中心）的屏幕位置，就在炮底座上
     uiStage.position.set(VW / 2, -cy, 1);
     // 道具栏抬到圆弧上方：按盘面椭圆算按钮所在 x 处的弧高（盘面半宽≈图宽 0.49，半高≈图高 0.42）
-    const a = sw * 0.49, b = sh * 0.42, dx = VW / 2 - 44;
+    // 按离炮最近的那颗按钮算（圆弧越靠中间越高）：炮占屏宽 42%，按钮紧挨着它
+    const a = sw * STAGE_CFG[STAGE].ha, b = sh * STAGE_CFG[STAGE].hb, dx = Math.min(VW / 2 - 44, VW * 0.21 + 30);
     const arcY = cy - b * Math.sqrt(Math.max(0, 1 - (dx / a) ** 2));
     document.documentElement.style.setProperty('--bar-lift', `${Math.max(0, VH - arcY + 4)}px`);
   }
@@ -442,8 +501,11 @@ function layout() {
 }
 
 // 叠加层精灵（屏幕像素坐标，y 向下取负）
+// 底盘图：盘面中心离图底边的比例 cy、盘面半宽/半高占图宽高的比例（量出来的）；换底盘图时在这里登记
+const STAGE_CFG = { launcher_stage: { cy: 0.56, ha: 0.49, hb: 0.42 } };
+const STAGE = 'launcher_stage';
 const uiStage = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
-uiStage.center.set(0.5, 0.56);   // 锚点在盘面中心（图里盘面中心离底边约 56%）
+uiStage.center.set(0.5, STAGE_CFG[STAGE].cy);   // 锚点在盘面中心
 uiStage.renderOrder = 1;
 ui.add(uiStage);
 const uiLauncher = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
@@ -593,7 +655,8 @@ const BOOM_COLORS = { kitchen: [0xe8261a, 0xff7a1a, 0xf6c33b, 0x9e1b12], drinks:
 function explode(it) {
   const p = new THREE.Vector3().copy(it.body.position);
   killItem(it);
-  const R = 3.2, F = 26;
+  const soft = it.def.explosive === 'soft';   // 皮纳塔：炸开撒糖，力道和范围都小
+  const R = soft ? 2.2 : 3.2, F = soft ? 11 : 26;
   for (const o of S.items) {
     if (o.dead || o.body.type !== CANNON.Body.DYNAMIC) continue;
     const d = new THREE.Vector3().copy(o.body.position).sub(p), dist = d.length();
@@ -603,6 +666,15 @@ function explode(it) {
     d.normalize();
     const k = F * (1 - dist / R) * Math.pow(o.mass, 0.6);
     o.body.applyImpulse(new CANNON.Vec3(d.x * k, d.y * k + k * 0.5, d.z * k - k * 0.3));
+  }
+  if (soft) {   // 皮纳塔：彩色糖果雨 + 软一点的爆声
+    emit(p, [0xff4d8d, 0xffd34d, 0x4dc3ff, 0x7ddc5a, 0xffffff], 90, 6, 4, 1.4);
+    emit(p, [0xff4d8d, 0xffd34d, 0x4dc3ff, 0x7ddc5a], 26, 5, 5, 1.6, 14, true);
+    S.shake = Math.max(S.shake, 0.3);
+    S.hitstop = Math.max(S.hitstop, 0.05);
+    sfx.play('boom', { vol: 0.6, rate: 1.4, gap: 0.08 });
+    sfx.play('firework', { vol: 0.7 });
+    return;
   }
   flashes.push({ p, t: 0 });
   emit(p, BOOM_COLORS[S.theme], 100, 9, 3, 1.1);
@@ -904,6 +976,11 @@ function step(dt) {
 function syncItem(it) {
   const p = it.body.position;
   it.sprite.position.set(p.x, p.y, p.z);
+  if (it.rod) {   // 摆锤杆：挂点到锤头中点
+    const P = it.pivot;
+    it.rod.position.set((P.x + p.x) / 2, (P.y + p.y) / 2, P.z);
+    it.rod.rotation.z = Math.atan2(p.x - P.x, P.y - p.y);
+  }
   if (!it.blocker) {
     _q.set(it.body.quaternion.x, it.body.quaternion.y, it.body.quaternion.z, it.body.quaternion.w);
     _up.set(0, 1, 0).applyQuaternion(_q);
@@ -924,6 +1001,7 @@ function syncItem(it) {
 }
 
 function render() {
+  if (tableMesh && S.tableBody && S.tableBody.type === CANNON.Body.KINEMATIC) tableMesh.quaternion.copy(S.tableBody.quaternion);   // 转桌台面跟着物理转
   if (S.level) {
     for (const it of S.items) if (!it.dead) syncItem(it);
     for (const b of S.balls) {
@@ -1003,11 +1081,14 @@ function frame(now) {
 if (params.has('debug')) document.body.classList.add('debug');
 if (params.has('silent')) { sfx.toggleMute(); $('mute').textContent = '🔇'; }
 sfx.loadSamples();
-await loadAssets();
-setDims(archDims);
-layout();
-if (params.has('play')) leaveStart();
-requestAnimationFrame(frame);
+// 不用顶层 await：小游戏包（抖音 / TikTok）的脚本环境不支持
+loadAssets().then(() => {
+  setDims(archDims);
+  layout();
+  if (params.has('play')) leaveStart();
+  requestAnimationFrame(frame);
+  window.__ready = true;
+});
 
 // ---------- 测试接口：自动化试玩 / 机器人校准 / 宣传片录制 ----------
 window.__game = {
@@ -1016,9 +1097,11 @@ window.__game = {
   arm: (k) => { S.armed = k; },
   fireAt: (x, y, z = 0) => fire(new THREE.Vector3(x, y, z)),
   load: (idx, theme) => { S.themeOverride = theme || null; loadLevel(idx, !!theme); },
+  // 调试：直接载入一份关卡数据（性能测试、生成器调试用）
+  loadCustom: (lvl) => { S.customLevel = lvl; loadLevel(0, true); },
   items: () => S.items,
   pos: (it) => it.body.position,
-  tick(sec) { for (let k = 0; k < Math.round(sec * 60); k++) step(1 / 60); render(); },
+  tick(sec, draw = true) { for (let k = 0; k < Math.round(sec * 60); k++) step(1 / 60); if (draw) render(); },
   // 机器人：打最高的物件；同一目标连续两发没进展就登记为死角换目标（学 Angry 的 AutoplayDeadAimRegistry）
   // ammo：null = 给足弹药测"需要几发"；'real' = 用关卡真实炮弹数测"能不能过"
   autoplay(list, ammo = null) {
@@ -1028,9 +1111,12 @@ window.__game = {
     for (const n of list) {
       if (ammo === 'real') store.set('dda', 0);
       loadLevel(n - 1);
-      if (ammo !== 'real') S.shots = ammo ?? 40;
-      const budget = ammo === 'real' ? S.shots : ammo ?? 25;
+      // 测"最少几发"：给 60 发、最多打 45 发（原作密集关炮弹中位 22–25）
+      if (ammo !== 'real') S.shots = 60;
+      const budget = ammo === 'real' ? S.shots : 45;
+      const t0 = performance.now();
       let used = 0;
+      const boosts = {};
       const dead = new Map();
       while (S.remaining > 0 && used < budget && S.shots > 0) {
         const live = S.items.filter((i) => !i.dead && !i.cleared && i.counted);
@@ -1040,14 +1126,20 @@ window.__game = {
         cand.sort((a, b) => b.body.position.y - a.body.position.y);
         const it = cand[0], before = S.remaining, p0 = new THREE.Vector3().copy(it.body.position);
         S.lastShotAt = -99;
+        // 道具模式：每 3 发里第 1 发轮流用三连发 / 火箭 / 大西瓜（库存补满），验证道具在每一关都正常
+        if (ammo === 'boost' && used % 3 === 0) { const k = ['tri', 'rocket', 'big'][(used / 3) % 3]; inv[k] = Math.max(inv[k], 5); S.armed = k; boosts[k] = (boosts[k] || 0) + 1; }
         fire(p0.clone());
         used++;
-        this.tick(2.0);
+        // 等到番茄落地、物件基本停稳就打下一发（最少 0.6 秒、最多 2.4 秒），比固定等 2 秒快一倍
+        for (let w = 0; w < 8; w++) {
+          this.tick(0.3, !CAL);
+          if (w >= 1 && !S.balls.some((b) => !b.splatted && b.body.position.y > -1) && S.items.every((i) => i.dead || i.cleared || i.body.type !== CANNON.Body.DYNAMIC || i.body.sleepState === CANNON.Body.SLEEPING || i.body.velocity.lengthSquared() < 0.25)) break;
+        }
         const moved = it.cleared || p0.distanceTo(new THREE.Vector3().copy(it.body.position)) > 0.3;
         if (S.remaining === before && !moved) dead.set(it, (dead.get(it) || 0) + 1);
       }
-      this.tick(2.5);
-      out[n] = { need: S.remaining <= 0 ? used : 99, total: S.total, left: S.remaining, diff: S.diff };
+      this.tick(2.5, !CAL);
+      out[n] = { need: S.remaining <= 0 ? used : 99, total: S.total, left: S.remaining, diff: S.diff, shots: S.startShots, ms: Math.round(performance.now() - t0), boosts };
     }
     Object.assign(inv, invBefore);
     store.set('inv', inv);
@@ -1055,3 +1147,25 @@ window.__game = {
     return out;
   },
 };
+
+// ---------- 批量校准模式：?cal=起-止&mode=need|real ----------
+// 无界面浏览器打开这个地址就逐关跑机器人，每关结果 POST 给本地收集服务（127.0.0.1:8767）；
+// 用 MessageChannel 让出事件循环（后台页的定时器会被限流，消息不会）
+const CAL = new URLSearchParams(location.search).get('cal');
+if (CAL) {
+  // cal=起-止，或 cal=list&list=3,7,19（逗号分隔的关号）
+  const q = new URLSearchParams(location.search);
+  const queue = CAL === 'list' ? q.get('list').split(',').map(Number) : (([a, b]) => Array.from({ length: b - a + 1 }, (_, k) => a + k))(CAL.split('-').map(Number));
+  const mode = ['real', 'boost'].includes(q.get('mode')) ? q.get('mode') : null;
+  const ch = new MessageChannel();
+  ch.port1.onmessage = async () => {
+    if (!queue.length) { await fetch('http://127.0.0.1:8767/done', { method: 'POST', body: q.get('k') || CAL }).catch(() => {}); return; }
+    const n = queue.shift();
+    let res;
+    try { res = window.__game.autoplay([n], mode)[n]; } catch (err) { res = { error: String(err) }; }
+    await fetch('http://127.0.0.1:8767/result', { method: 'POST', body: JSON.stringify({ n, mode: mode || 'need', ...res }) }).catch(() => {});
+    ch.port2.postMessage(0);
+  };
+  const go = () => (window.__ready ? ch.port2.postMessage(0) : setTimeout(go, 200));   // 素材加载完再开跑
+  go();
+}

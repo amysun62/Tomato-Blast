@@ -1,0 +1,7 @@
+{
+  "name": "tomato-blast-minigame",
+  "private": true,
+  "description": "抖音 / TikTok 原生小游戏构建：把网页版 game3d.js 打成一个 bundle，配适配层和画布界面",
+  "scripts": { "build": "node build.mjs" },
+  "devDependencies": { "esbuild": "0.24.0", "three": "0.160.0", "cannon-es": "0.20.0" }
+}

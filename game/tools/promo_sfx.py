@@ -1,6 +1,6 @@
 """宣传片音效轨：读录制时记下的音效事件（[秒, 名字, 音量, 音高]），离线合成成 WAV。
 本机有原作采样（assets/sfx_ref）时用采样，否则用自己合成的声音。
-用法：python3 promo_sfx.py events.json out.wav 总秒数
+用法：python3 promo_sfx.py events.json out.wav 总秒数 [--own]（--own：公开版，只用自己做的声音）
 """
 import json
 import os
@@ -186,7 +186,8 @@ def decode(path):
 
 
 SAMPLES = {}
-for k, f in SAMPLE_FILES.items():
+OWN_ONLY = '--own' in sys.argv   # 公开版：只用自己做的声音，不碰原作采样
+for k, f in ({} if OWN_ONLY else SAMPLE_FILES).items():
     p = os.path.join(REF, f)
     if os.path.exists(p):
         SAMPLES[k] = decode(p)

@@ -17,6 +17,10 @@ export const ARCH = {
   ball:   { role: '会滚的圆', w: 0.8, h: 0.8, mass: 0.7, mat: 'soft', round: true },
   wall:   { role: '固定挡板', w: 0.3, h: 2, mat: 'stone', body: 'static', counted: false },
   slider: { role: '移动挡板', w: 0.3, h: 1.6, mat: 'stone', body: 'kinematic', counted: false },
+  // 原作第 1 关起的弹跳柱、第 5 关起的皮纳塔（被打会炸开但力道小、撒糖果）、第 42 关起的摆锤
+  bouncer: { role: '弹跳柱', w: 0.8, h: 0.8, mass: 1.2, mat: 'bouncy' },
+  pinata: { role: '皮纳塔', w: 0.9, h: 0.9, mass: 0.6, mat: 'soft', explosive: 'soft' },
+  hammer: { role: '摆锤', w: 1.2, h: 0.7, mat: 'stone', body: 'kinematic', counted: false },
 };
 
 // 难度节奏：照搬拆包结论——每 10 关一循环，x4/x7 = 困难，x0 = 超难
@@ -63,62 +67,6 @@ function row(type, cx, n, spacing, base = 0) {
 const top = (type, rows) => rows * (H(type) + GAP);   // 一摞的顶面高度
 
 // ---------- 前 10 关：手工教学关 ----------
-const HANDMADE = [
-  { name: 'Warm-Up', Theme: 'kitchen', MoveCount: 7, Table: { w: 6 },
-    build: () => [...wall('box', 0, 3, 3)] },
-
-  { name: 'Can Tower', Theme: 'kitchen', MoveCount: 8, Table: { w: 6.5 },
-    build: () => [...pyramid('drum', 0, 5)] },
-
-  { name: 'Stack Attack', Theme: 'kitchen', MoveCount: 9, Table: { w: 7 },
-    build: () => [...stack('slick', -2.4, 4), ...wall('box', 0, 2, 3), ...stack('disc', 2.4, 6), at('ball', -0.52, top('box', 3) + H('ball') / 2)] },
-
-  { name: 'Heavyweights', Theme: 'drinks', MoveCount: 9, Table: { w: 7 },
-    build: () => [...wall('heavy', -1.6, 2, 2), ...wall('box', 1.4, 3, 3), ...row('bottle', 1.4, 3, 0.95, top('box', 3)), ...row('jar', -1.6, 2, 1.0, top('heavy', 2))] },
-
-  { name: 'Hair Trigger', Theme: 'drinks', MoveCount: 6, Table: { w: 6.5 },
-    build: () => {
-      const side = W('boom') / 2 + 0.06 + (W('box') + 0.02);   // 两侧木箱墙紧贴炸药罐
-      return [...wall('box', -side, 2, 2), at('boom', 0, H('boom') / 2), at('box', 0, H('boom') + GAP + H('box') / 2), ...wall('box', side, 2, 2)];
-    } },
-
-  { name: 'Overpass', Theme: 'drinks', MoveCount: 9, Table: { w: 7.5 },
-    build: () => {
-      const deck = H('pillar') + GAP, onDeck = deck + H('plank') + GAP;
-      return [
-        ...stack('pillar', -2.6, 1), ...stack('pillar', 0, 1), ...stack('pillar', 2.6, 1),
-        at('plank', -1.3, deck + H('plank') / 2), at('plank', 1.3, deck + H('plank') / 2),
-        ...row('jar', -1.3, 2, 1.0, onDeck), ...row('jar', 1.3, 2, 1.0, onDeck),
-        ...row('bottle', -1.3, 2, 0.9), ...row('bottle', 1.3, 2, 0.9),
-      ];
-    } },
-
-  { name: 'Moving Guard', Theme: 'bakery', MoveCount: 8, Table: { w: 6.5 },
-    build: () => [...wall('box', 0, 4, 3), at('slider', -3.0, 2.2, { amp: 1.2, cycle: 2.4 })] },
-
-  { name: 'High Tea', Theme: 'bakery', MoveCount: 9, Table: { w: 7.5 },
-    build: () => [...pyramid('drum', -1.7, 4), ...pyramid('jar', 2.2, 3), at('boom', 0.6, H('boom') / 2), at('ball', 2.2, top('jar', 3) + H('ball') / 2)] },
-
-  { name: 'Dessert Castle', Theme: 'bakery', MoveCount: 10, Table: { w: 8 },
-    build: () => [
-      ...stack('heavy', -2.5, 3), ...stack('heavy', 2.5, 3),
-      ...wall('box', 0, 4, 2), ...pyramid('drum', 0, 3, top('box', 2)),
-      at('jar', -2.5, top('heavy', 3) + H('jar') / 2), at('jar', 2.5, top('heavy', 3) + H('jar') / 2),
-      ...stack('disc', -3.6, 4), ...stack('disc', 3.6, 4),
-    ] },
-
-  { name: "Chef's Challenge", Theme: 'bakery', MoveCount: 12, Table: { w: 9 },
-    build: () => [
-      ...wall('heavy', -3.2, 2, 3), ...wall('heavy', 3.2, 2, 3),
-      ...wall('slick', 0, 3, 2), ...wall('box', 0, 3, 2, top('slick', 2)),
-      at('boom', -3.2, top('heavy', 3) + H('boom') / 2), at('boom', 3.2, top('heavy', 3) + H('boom') / 2),
-      ...pyramid('jar', 0, 2, top('slick', 2) + top('box', 2)),
-      at('slider', -4.4, 2.9, { amp: 1.3, cycle: 2.8 }),   // 只留移动挡板：靠抓时机，不封死
-    ] },
-];
-
-// ---------- 关卡生成器：第 11 关起按"槽位 + 积木模块"拼装 ----------
-// 同一个关号永远生成同一关（种子 = 关号），可复现、可被机器人逐关校准
 export const THEME_CYCLE = ['kitchen', 'drinks', 'bakery'];
 const NAMES = {
   kitchen: ['Tomato Party', 'Sauce Squad', 'Kitchen Chaos', 'Can Mountain', 'Chop Shop', 'Spicy Showdown', "Chef's Table", 'Tomato Rain', 'Spice Rack', 'Dinner Time'],
@@ -127,131 +75,167 @@ const NAMES = {
 };
 export const THEME_NAMES = { kitchen: 'Tomato Kitchen', drinks: 'Soda Bar', bakery: 'Bakery' };
 // 实测发现布局有问题的关，换一个种子重新生成（关号 → 盐值）
-const RESEED = { 54: 7 };
+// 机器人实测打不完的关换一个种子重新生成（关号 → 盐值）；每关的拆包参数不变，只换外形和材质抽样
+const RESEED = { 127: 63, 210: 100, 240: 11, 292: 111, 351: 100, 398: 11, 500: 111, 529: 1, 537: 100, 578: 11, 584: 11, 648: 100, 654: 32, 681: 2, 684: 2, 764: 32, 775: 100, 789: 102, 807: 1, 808: 100, 832: 315, 840: 1, 841: 1, 898: 2 };
 function seeded(n) {
   let s = ((n + (RESEED[n] || 0) * 1000) * 2654435761) % 2147483647 || 1;
   return () => (s = (s * 16807) % 2147483647) / 2147483647;
 }
 // 每个模块：fit(sw, r, hard) → { w: 占用宽度, make(cx) → 物件列表 }
-const MODULES = [
-  { id: 'wall', min: 1, fit: (sw, r, hard) => {
-    const cols = Math.max(2, Math.min(4, Math.floor(sw)));
-    const rows = 2 + Math.floor(r() * 3);
-    const type = hard && r() < 0.6 ? 'heavy' : r() < 0.25 ? 'slick' : 'box';
-    const crown = r() < 0.5 ? 'jar' : 'bottle';
-    return { w: cols, make: (cx) => [...wall(type, cx, cols, rows), ...row(crown, cx, cols, 1.02, top(type, rows))] };
-  } },
-  { id: 'towers', min: 1, fit: (sw, r, hard) => {
-    const h = 3 + Math.floor(r() * 3), type = hard && r() < 0.5 ? 'slick' : 'box';
-    return { w: 2.4, make: (cx) => [...stack(type, cx - 0.7, h), ...stack(type, cx + 0.7, h), at('ball', cx - 0.7, top(type, h) + 0.4)] };
-  } },
-  { id: 'drumPyr', min: 1, fit: (sw) => {
-    const base = Math.max(2, Math.min(5, Math.floor(sw / 0.79)));
-    return { w: base * 0.79, make: (cx) => pyramid('drum', cx, base) };
-  } },
-  { id: 'jarPyr', min: 12, fit: (sw) => {
-    const base = Math.max(2, Math.min(5, Math.floor(sw / 0.67)));
-    return { w: base * 0.67, make: (cx) => pyramid('jar', cx, base) };
-  } },
-  { id: 'bottles', min: 15, fit: (sw) => {
-    const n = Math.max(2, Math.min(5, Math.floor(sw / 0.8)));
-    return { w: n * 0.8, make: (cx) => [...row('bottle', cx, n, 0.8), ...row('plank', cx, 1, 0, H('bottle') + GAP), ...row('bottle', cx, Math.max(1, n - 2), 0.8, H('bottle') + H('plank') + GAP * 2)] };
-  } },
-  { id: 'discs', min: 18, fit: (sw, r) => {
-    const h = 4 + Math.floor(r() * 4);
-    return { w: 2.0, make: (cx) => [...stack('disc', cx - 0.5, h), ...stack('disc', cx + 0.5, h)] };
-  } },
-  { id: 'bridge', min: 22, fit: () => ({ w: 3.2, make: (cx) => {
-    const deck = H('pillar') + GAP, span = Math.min(1.2, W('plank') / 2 - W('pillar') / 2);
-    return [
-      ...stack('pillar', cx - span, 1), ...stack('pillar', cx + span, 1),
-      at('plank', cx, deck + H('plank') / 2), ...row('jar', cx, 2, 1.1, deck + H('plank') + GAP), at('drum', cx, H('drum') / 2),
-    ];
-  } }) },
-  { id: 'castle', min: 26, fit: () => ({ w: 3.2, make: (cx) => [
-    ...stack('heavy', cx - 1.1, 3), ...stack('heavy', cx + 1.1, 3), ...stack('box', cx, 2),
-    at('drum', cx, top('box', 2) + H('drum') / 2),
-    at('bottle', cx - 1.1, top('heavy', 3) + H('bottle') / 2), at('bottle', cx + 1.1, top('heavy', 3) + H('bottle') / 2),
-  ] }) },
-  { id: 'boomCore', min: 9, fit: () => ({ w: 3.2, make: (cx) => {
-    const side = W('boom') / 2 + 0.06 + W('box') / 2;
-    return [...wall('box', cx - side, 1, 2), at('boom', cx, H('boom') / 2), at('box', cx, H('boom') + GAP + H('box') / 2), ...wall('box', cx + side, 1, 2)];
-  } }) },
-  { id: 'fruit', min: 14, fit: (sw) => {
-    const n = Math.max(2, Math.min(4, Math.floor(sw / 1.05)));
-    return { w: n * 1.05, make: (cx) => [...wall('box', cx, n, 1), ...row('ball', cx, n, 1.02, top('box', 1)), ...row('ball', cx, Math.max(1, n - 1), 1.02, top('box', 1) + H('ball') + GAP)] };
-  } },
-];
-
+// ---------- 关卡生成器（2026-10-22 起按拆包参数）----------
+// 每关的数字参数（物件数、炮弹数、桌型/宽/深、转桌速度、挡板、摆锤、高度、材质比例）来自原作关卡统计 data/level_params.js，
+// 摆法由这里的外形模板自己生成：学原作的节奏和密度，不抄原作布局。
+// 镜头限制：最多 8 层高、3 排纵深；物件数封顶 110（性能实测：85 个物件每帧物理约 8ms）
+import { PARAMS, MIX_KEYS } from './data/level_params.js';
+export const LEVEL_COUNT = 1000;
+const MAX_LAYERS = 8, MAX_ROWS = 3, MAX_ITEMS = 110, PITCH_X = 1.02, PITCH_Z = 1.15;
 const themeOf = (n) => THEME_CYCLE[Math.floor((n - 1) / 10) % 3];
+
+// 外形模板：列号 c（0..cols-1）→ 相对高度 0..1
+const SHAPES = {
+  flat: () => 1,
+  pyramid: (c, cols) => 1 - Math.abs(c - (cols - 1) / 2) / ((cols + 1) / 2),
+  valley: (c, cols) => 0.35 + Math.abs(c - (cols - 1) / 2) / ((cols - 1) / 2 || 1) * 0.65,
+  twin: (c, cols) => (c === 1 || c === cols - 2 ? 1 : 0.45),
+  castle: (c, cols) => (c === 0 || c === cols - 1 ? 1 : c % 2 ? 0.55 : 0.7),
+  stairs: (c, cols) => 0.25 + 0.75 * (c / (cols - 1 || 1)),
+  stairsL: (c, cols) => 1 - 0.75 * (c / (cols - 1 || 1)),
+  skyline: (c, cols, r) => 0.35 + r() * 0.65,
+};
+const SHAPE_KEYS = Object.keys(SHAPES);
+
+function pickWeighted(r, weights) {
+  let t = r() * weights.reduce((a, [, w]) => a + w, 0);
+  for (const [k, w] of weights) if ((t -= w) <= 0) return k;
+  return weights[0][0];
+}
+
 function genEntities(n) {
   const r = seeded(n);
-  const diff = difficultyOf(n);
-  const hard = diff > 0;
-  const theme = themeOf(n);
-  const slots = n < 20 ? 2 : r() < 0.5 ? 3 : 2;
-  const width = slots === 3 ? 8 : 6.5;   // 2D 里桌子太宽，打倒的东西推不下桌
-  const sw = width / slots - 0.4;
-  const pool = MODULES.filter((m) => m.min <= n);
-  const ents = [];
-  for (let s = 0; s < slots; s++) {
-    const cx = (s - (slots - 1) / 2) * (width / slots);
-    let m = pool[Math.floor(r() * pool.length)];
-    if (m.id === 'boomCore' && ents.some((e) => e.Id === 'boom')) m = pool[0];
-    let mod = m.fit(sw, r, hard);
-    if (mod.w > sw + 0.5) mod = MODULES[0].fit(sw, r, hard);   // 放不下就退回一面墙
-    ents.push(...mod.make(cx));
+  const P = PARAMS[(n - 1) % PARAMS.length];
+  const [nItems, moves, tableType, tw, td, rotSpeed, blk, hammers, height, ...mixArr] = P;
+  const mix = Object.fromEntries(MIX_KEYS.map((k, i) => [k, mixArr[i]]));
+  const round = tableType === 1 || rotSpeed > 0;   // 转桌在引擎里做成圆桌
+  // 圆桌四面都远，物件很难推下去（实测失败关 72% 是圆桌）→ 圆桌最多 6 列宽（半径约 3.3 米）
+  const cols = Math.max(4, Math.min(round ? 6 : 8, Math.round(tw)));
+  const rows = Math.max(1, Math.min(MAX_ROWS, Math.round(td / 1.4)));
+  const layers = Math.max(3, Math.min(MAX_LAYERS, Math.floor(height)));
+  const width = cols * PITCH_X + 0.6, depth = rows * PITCH_Z + 0.5;
+
+  // 圆桌：去掉四角
+  const cells = [];
+  for (let c = 0; c < cols; c++) for (let w = 0; w < rows; w++) {
+    const x = (c - (cols - 1) / 2) * PITCH_X, z = (w - (rows - 1) / 2) * PITCH_Z;
+    if (round && Math.hypot(x, z) > width / 2 - 0.55) continue;   // 圆桌：只摆在圆里
+    cells.push({ c, w, x, z });
   }
-  // 困难关：桌子左缘上方一块悬空挡板（学 Royal 的 Blocker）；超难关：桌子左上方一块上下移动的挡板
-  if (diff === 1 && n >= 24) ents.push(at('wall', -width / 2 + 0.2, 1.3 + H('wall') / 2));   // 悬空挡板：底边离桌面 1.3 米，挡高处、留下方平射的缝
-  if (diff === 2) ents.push(at('slider', -width / 2 + 0.25, 2.4 + r() * 0.6, { amp: 1.1 + r() * 0.4, cycle: 2.2 + r() * 1.2 }));
-  // 挡板那一列清空，避免开局物件和挡板重叠被弹飞
-  for (const b of ents.filter((e) => ARCH[e.Id].counted === false)) {
-    for (let k = ents.length - 1; k >= 0; k--) {
-      const e = ents[k];
-      if (e !== b && ARCH[e.Id].counted !== false && Math.abs(e.x - b.x) < W(e.Id) / 2 + W(b.Id) / 2 + 0.15) ents.splice(k, 1);
+  // 外形 → 每格目标层数，再整体缩放到目标物件数
+  const shape = SHAPES[SHAPE_KEYS[Math.floor(r() * SHAPE_KEYS.length)]];
+  const backBoost = rows > 1 && r() < 0.5;   // 一半关卡后排更高（像看台），后排不被前排完全挡住
+  for (const cell of cells) cell.f = Math.max(0.15, shape(cell.c, cols, r)) * (backBoost ? 0.75 + 0.25 * (1 - cell.w / Math.max(1, rows - 1)) : 1);
+  const target = Math.max(12, Math.min(nItems, MAX_ITEMS, Math.floor(cells.length * layers * 0.85)));
+  const sumF = cells.reduce((a, b) => a + b.f, 0);
+  let k = target / sumF;
+  for (const cell of cells) cell.h = Math.max(1, Math.min(layers, Math.round(cell.f * k)));
+  // 固定挡板关：挡板后面那几列最多 2 层（挡板悬在 2.3 米以上），挡板仍然挡住那一侧的高处，但不会把后面封死（实测 681/684/898 打不完）
+  if (blk === 1) { const bx = -width / 2 + 1.6; for (const cell of cells) if (Math.abs(cell.x - bx) < 1.4) cell.h = Math.min(cell.h, 2); }
+  // 材质：按原作该关的比例抽；重的往下放、圆柱和瓶子往上放（稳），每关炸药最多 3 个
+  const weights = MIX_KEYS.map((key) => [key, mix[key] || 0]).filter(([, w]) => w > 0);
+  if (!weights.length) weights.push(['box', 1]);
+  const stackTypes = (h) => {
+    const t = Array.from({ length: h }, () => pickWeighted(r, weights));
+    const rank = { heavy: 0, slick: 1, box: 2, bouncer: 2, pillar: 3, boom: 3, pinata: 4, drum: 5, jar: 6, bottle: 7, ball: 8 };
+    return t.sort((a, b) => (rank[a] ?? 4) - (rank[b] ?? 4));
+  };
+  const ents = [];
+  let booms = 0;
+  for (const cell of cells) {
+    let y = 0;
+    const types = stackTypes(cell.h);
+    for (let L = 0; L < types.length; L++) {
+      let t = types[L];
+      if ((t === 'boom' || t === 'pinata') && ++booms > 3) t = 'box';
+      if (t === 'pillar' && L > 0) t = 'box';          // 高柱只放底层
+      if (t === 'ball' && L < types.length - 1) t = 'jar';   // 会滚的只放顶上
+      if (y + H(t) > MAX_LAYERS) break;
+      ents.push({ Id: t, x: cell.x, y: y + H(t) / 2, z: cell.z });
+      y += H(t) + GAP;
     }
   }
-  return { ents, width };
-}
-// 炮弹数公式（机器人校准前的初值）：Royal 中位数 ≈ 物件数 × 0.28；Angry 前 30 关蜜月期多给
-function shotsFor(n, ents) {
-  const counted = ents.filter((e) => ARCH[e.Id].counted !== false).length;
-  let shots = Math.ceil(counted * 0.28) + 3;
-  if (n <= 30) shots += 2;
-  return Math.max(6, Math.min(18, shots - difficultyOf(n)));
+  // 挡板（原作 Blocker）：1 = 固定悬空、2 = 上下移动；摆锤（原作 Hammer）放桌子正上方
+  if (blk === 1) ents.push(at('wall', -width / 2 + 0.2, 1.3 + H('wall') / 2));
+  if (blk === 2) ents.push(at('slider', -width / 2 + 0.25, 2.4 + r() * 0.6, { amp: 1.1 + r() * 0.4, cycle: 2.2 + r() * 1.2 }));
+  // 摆锤挂在物件堆前方（z 在桌前沿外），是会动的障碍：挡弹道、不碰物件
+  for (let h = 0; h < Math.min(2, hammers); h++) ents.push({ Id: 'hammer', x: (h - (Math.min(2, hammers) - 1) / 2) * width * 0.4, y: 2.2 + r() * 1.2, z: depth / 2 + 0.7, Custom: { swing: 0.8, cycle: 2.6 + r() * 1.2, phase: r() * 6.28 } });
+  return { ents, width, depth, round, rotSpeed, moves };
 }
 
-// 2026-10-22 机器人校准（第一人称版，新炮口位置）：机器人清台发数 + 余量（普通 +3，前 30 关 +4；困难 +2；超难 +3），最少 5、最多 20
-// 100 关机器人全部清得掉；前 10 关手工关也按校准结果覆盖
+// 2026-10-22 机器人校准（1000 关，无界面浏览器 8 路并行实打，每关开局时钟归零可复现）：机器人清台发数 + 余量
+// 余量 = max(普通 +5 / 前 30 关 +6 / 困难 +3 / 超难 +4, 机器人用量的 12%)，最少 6、最多 55
 export const SHOT_OVERRIDES = {
-  1: 7, 2: 7, 3: 10, 4: 11, 5: 7, 6: 13, 7: 10, 8: 10, 9: 15, 10: 15, 11: 10, 12: 12, 13: 9, 14: 13, 15: 12,
-  16: 11, 17: 9, 18: 10, 19: 10, 20: 11, 21: 11, 22: 13, 23: 10, 24: 11, 25: 8, 26: 14, 27: 11, 28: 11, 29: 15, 30: 11,
-  31: 13, 32: 13, 33: 10, 34: 7, 35: 10, 36: 12, 37: 13, 38: 8, 39: 13, 40: 9, 41: 13, 42: 13, 43: 10, 44: 15, 45: 9,
-  46: 12, 47: 8, 48: 9, 49: 16, 50: 12, 51: 6, 52: 11, 53: 8, 54: 15, 55: 12, 56: 15, 57: 7, 58: 10, 59: 13, 60: 11,
-  61: 12, 62: 14, 63: 11, 64: 14, 65: 9, 66: 13, 67: 9, 68: 17, 69: 12, 70: 11, 71: 13, 72: 14, 73: 11, 74: 10, 75: 13,
-  76: 10, 77: 10, 78: 8, 79: 8, 80: 10, 81: 10, 82: 11, 83: 10, 84: 8, 85: 9, 86: 13, 87: 11, 88: 10, 89: 9, 90: 7,
-  91: 13, 92: 10, 93: 11, 94: 11, 95: 13, 96: 11, 97: 12, 98: 13, 99: 9, 100: 15,
+  1: 23, 2: 16, 3: 34, 4: 11, 5: 15, 6: 13, 7: 9, 8: 12, 9: 15, 10: 18, 11: 29, 12: 20, 13: 16, 14: 13, 15: 23, 16: 18, 17: 32, 18: 13, 19: 30, 20: 28,
+  21: 29, 22: 17, 23: 19, 24: 41, 25: 25, 26: 42, 27: 15, 28: 28, 29: 19, 30: 21, 31: 17, 32: 23, 33: 14, 34: 24, 35: 21, 36: 18, 37: 22, 38: 19, 39: 10, 40: 22,
+  41: 27, 42: 26, 43: 30, 44: 30, 45: 17, 46: 21, 47: 30, 48: 17, 49: 17, 50: 34, 51: 35, 52: 14, 53: 14, 54: 31, 55: 28, 56: 20, 57: 32, 58: 34, 59: 20, 60: 31,
+  61: 13, 62: 15, 63: 28, 64: 34, 65: 33, 66: 26, 67: 27, 68: 31, 69: 27, 70: 22, 71: 18, 72: 21, 73: 42, 74: 27, 75: 19, 76: 41, 77: 33, 78: 14, 79: 22, 80: 18,
+  81: 15, 82: 22, 83: 25, 84: 17, 85: 15, 86: 22, 87: 38, 88: 36, 89: 15, 90: 16, 91: 13, 92: 16, 93: 14, 94: 26, 95: 19, 96: 26, 97: 24, 98: 25, 99: 28, 100: 28,
+  101: 24, 102: 15, 103: 36, 104: 22, 105: 28, 106: 25, 107: 30, 108: 14, 109: 37, 110: 18, 111: 35, 112: 25, 113: 39, 114: 23, 115: 18, 116: 26, 117: 20, 118: 18, 119: 24, 120: 22,
+  121: 21, 122: 27, 123: 28, 124: 49, 125: 19, 126: 28, 127: 59, 128: 16, 129: 15, 130: 21, 131: 25, 132: 33, 133: 26, 134: 30, 135: 32, 136: 33, 137: 33, 138: 24, 139: 31, 140: 24,
+  141: 32, 142: 14, 143: 20, 144: 30, 145: 18, 146: 19, 147: 34, 148: 30, 149: 20, 150: 26, 151: 22, 152: 20, 153: 25, 154: 31, 155: 13, 156: 33, 157: 16, 158: 28, 159: 30, 160: 22,
+  161: 37, 162: 35, 163: 40, 164: 45, 165: 38, 166: 20, 167: 17, 168: 11, 169: 21, 170: 35, 171: 27, 172: 39, 173: 26, 174: 25, 175: 22, 176: 31, 177: 49, 178: 50, 179: 18, 180: 26,
+  181: 16, 182: 13, 183: 20, 184: 20, 185: 23, 186: 25, 187: 11, 188: 38, 189: 23, 190: 11, 191: 25, 192: 12, 193: 18, 194: 12, 195: 21, 196: 26, 197: 15, 198: 22, 199: 21, 200: 23,
+  201: 28, 202: 9, 203: 21, 204: 16, 205: 28, 206: 51, 207: 30, 208: 34, 209: 27, 210: 23, 211: 26, 212: 33, 213: 22, 214: 18, 215: 29, 216: 22, 217: 30, 218: 25, 219: 30, 220: 14,
+  221: 23, 222: 21, 223: 23, 224: 34, 225: 25, 226: 14, 227: 23, 228: 18, 229: 24, 230: 20, 231: 30, 232: 20, 233: 17, 234: 25, 235: 32, 236: 28, 237: 24, 238: 30, 239: 19, 240: 17,
+  241: 34, 242: 23, 243: 12, 244: 17, 245: 21, 246: 25, 247: 21, 248: 24, 249: 24, 250: 28, 251: 24, 252: 18, 253: 21, 254: 16, 255: 23, 256: 17, 257: 14, 258: 21, 259: 20, 260: 11,
+  261: 28, 262: 15, 263: 22, 264: 43, 265: 28, 266: 21, 267: 24, 268: 36, 269: 17, 270: 37, 271: 18, 272: 33, 273: 24, 274: 10, 275: 30, 276: 12, 277: 36, 278: 25, 279: 37, 280: 26,
+  281: 36, 282: 33, 283: 23, 284: 15, 285: 21, 286: 28, 287: 22, 288: 18, 289: 27, 290: 27, 291: 13, 292: 43, 293: 27, 294: 28, 295: 17, 296: 24, 297: 10, 298: 31, 299: 21, 300: 23,
+  301: 26, 302: 14, 303: 19, 304: 17, 305: 23, 306: 31, 307: 20, 308: 18, 309: 24, 310: 17, 311: 20, 312: 31, 313: 24, 314: 29, 315: 24, 316: 35, 317: 33, 318: 14, 319: 20, 320: 46,
+  321: 19, 322: 26, 323: 30, 324: 10, 325: 19, 326: 12, 327: 12, 328: 37, 329: 25, 330: 24, 331: 16, 332: 33, 333: 26, 334: 27, 335: 21, 336: 18, 337: 34, 338: 20, 339: 36, 340: 38,
+  341: 26, 342: 25, 343: 15, 344: 14, 345: 27, 346: 33, 347: 38, 348: 27, 349: 35, 350: 32, 351: 50, 352: 16, 353: 18, 354: 37, 355: 37, 356: 16, 357: 25, 358: 26, 359: 20, 360: 31,
+  361: 17, 362: 27, 363: 29, 364: 13, 365: 25, 366: 29, 367: 33, 368: 33, 369: 39, 370: 24, 371: 23, 372: 21, 373: 14, 374: 19, 375: 25, 376: 23, 377: 23, 378: 15, 379: 25, 380: 25,
+  381: 20, 382: 26, 383: 31, 384: 47, 385: 15, 386: 33, 387: 39, 388: 19, 389: 20, 390: 20, 391: 10, 392: 22, 393: 22, 394: 24, 395: 32, 396: 16, 397: 17, 398: 50, 399: 25, 400: 27,
+  401: 32, 402: 19, 403: 30, 404: 25, 405: 19, 406: 14, 407: 27, 408: 29, 409: 20, 410: 34, 411: 21, 412: 29, 413: 29, 414: 30, 415: 16, 416: 32, 417: 21, 418: 16, 419: 28, 420: 12,
+  421: 40, 422: 18, 423: 26, 424: 26, 425: 29, 426: 16, 427: 30, 428: 28, 429: 36, 430: 25, 431: 24, 432: 26, 433: 20, 434: 19, 435: 28, 436: 22, 437: 35, 438: 26, 439: 27, 440: 17,
+  441: 21, 442: 25, 443: 15, 444: 20, 445: 20, 446: 27, 447: 41, 448: 39, 449: 20, 450: 14, 451: 23, 452: 16, 453: 27, 454: 19, 455: 32, 456: 29, 457: 24, 458: 44, 459: 34, 460: 39,
+  461: 14, 462: 20, 463: 25, 464: 22, 465: 22, 466: 20, 467: 46, 468: 17, 469: 23, 470: 13, 471: 18, 472: 23, 473: 16, 474: 26, 475: 18, 476: 30, 477: 22, 478: 37, 479: 18, 480: 35,
+  481: 31, 482: 35, 483: 23, 484: 27, 485: 36, 486: 19, 487: 14, 488: 27, 489: 38, 490: 34, 491: 35, 492: 29, 493: 48, 494: 24, 495: 27, 496: 38, 497: 21, 498: 33, 499: 31, 500: 49,
+  501: 27, 502: 23, 503: 13, 504: 23, 505: 21, 506: 26, 507: 32, 508: 36, 509: 29, 510: 27, 511: 38, 512: 26, 513: 21, 514: 14, 515: 15, 516: 26, 517: 14, 518: 32, 519: 36, 520: 25,
+  521: 28, 522: 11, 523: 20, 524: 34, 525: 31, 526: 20, 527: 13, 528: 23, 529: 33, 530: 30, 531: 26, 532: 35, 533: 25, 534: 27, 535: 28, 536: 27, 537: 40, 538: 20, 539: 25, 540: 41,
+  541: 22, 542: 21, 543: 34, 544: 43, 545: 27, 546: 26, 547: 27, 548: 25, 549: 15, 550: 21, 551: 37, 552: 31, 553: 27, 554: 40, 555: 30, 556: 28, 557: 18, 558: 16, 559: 26, 560: 30,
+  561: 13, 562: 32, 563: 15, 564: 28, 565: 21, 566: 25, 567: 43, 568: 48, 569: 33, 570: 26, 571: 27, 572: 28, 573: 22, 574: 28, 575: 22, 576: 22, 577: 32, 578: 54, 579: 22, 580: 17,
+  581: 23, 582: 40, 583: 31, 584: 37, 585: 30, 586: 25, 587: 30, 588: 41, 589: 13, 590: 25, 591: 29, 592: 27, 593: 31, 594: 37, 595: 33, 596: 43, 597: 16, 598: 32, 599: 21, 600: 23,
+  601: 28, 602: 26, 603: 30, 604: 28, 605: 16, 606: 24, 607: 58, 608: 26, 609: 24, 610: 22, 611: 37, 612: 34, 613: 18, 614: 26, 615: 21, 616: 17, 617: 13, 618: 30, 619: 33, 620: 23,
+  621: 41, 622: 38, 623: 38, 624: 28, 625: 27, 626: 24, 627: 22, 628: 37, 629: 43, 630: 20, 631: 44, 632: 15, 633: 21, 634: 16, 635: 11, 636: 19, 637: 22, 638: 29, 639: 39, 640: 35,
+  641: 34, 642: 30, 643: 22, 644: 35, 645: 19, 646: 37, 647: 19, 648: 29, 649: 13, 650: 25, 651: 19, 652: 20, 653: 40, 654: 48, 655: 20, 656: 28, 657: 35, 658: 27, 659: 30, 660: 19,
+  661: 22, 662: 18, 663: 22, 664: 24, 665: 18, 666: 20, 667: 15, 668: 26, 669: 38, 670: 29, 671: 13, 672: 36, 673: 28, 674: 16, 675: 36, 676: 19, 677: 46, 678: 25, 679: 30, 680: 36,
+  681: 48, 682: 22, 683: 40, 684: 41, 685: 19, 686: 14, 687: 16, 688: 17, 689: 42, 690: 34, 691: 35, 692: 35, 693: 28, 694: 24, 695: 25, 696: 25, 697: 60, 698: 20, 699: 27, 700: 28,
+  701: 39, 702: 34, 703: 29, 704: 30, 705: 26, 706: 21, 707: 25, 708: 21, 709: 32, 710: 23, 711: 20, 712: 30, 713: 28, 714: 35, 715: 23, 716: 28, 717: 13, 718: 35, 719: 38, 720: 29,
+  721: 32, 722: 25, 723: 23, 724: 27, 725: 30, 726: 26, 727: 17, 728: 28, 729: 29, 730: 23, 731: 29, 732: 14, 733: 21, 734: 23, 735: 28, 736: 17, 737: 13, 738: 34, 739: 21, 740: 35,
+  741: 29, 742: 29, 743: 29, 744: 12, 745: 16, 746: 32, 747: 23, 748: 32, 749: 32, 750: 31, 751: 14, 752: 30, 753: 15, 754: 14, 755: 21, 756: 12, 757: 25, 758: 19, 759: 28, 760: 31,
+  761: 35, 762: 29, 763: 40, 764: 53, 765: 14, 766: 37, 767: 16, 768: 23, 769: 24, 770: 27, 771: 37, 772: 21, 773: 36, 774: 31, 775: 38, 776: 27, 777: 36, 778: 25, 779: 36, 780: 21,
+  781: 36, 782: 18, 783: 18, 784: 25, 785: 20, 786: 17, 787: 21, 788: 32, 789: 47, 790: 24, 791: 36, 792: 30, 793: 19, 794: 32, 795: 24, 796: 22, 797: 20, 798: 12, 799: 25, 800: 31,
+  801: 33, 802: 27, 803: 43, 804: 17, 805: 27, 806: 31, 807: 60, 808: 34, 809: 19, 810: 28, 811: 16, 812: 17, 813: 48, 814: 21, 815: 21, 816: 29, 817: 24, 818: 19, 819: 53, 820: 17,
+  821: 32, 822: 21, 823: 17, 824: 34, 825: 18, 826: 21, 827: 28, 828: 20, 829: 25, 830: 55, 831: 23, 832: 48, 833: 16, 834: 14, 835: 29, 836: 32, 837: 34, 838: 19, 839: 17, 840: 25,
+  841: 43, 842: 34, 843: 41, 844: 34, 845: 12, 846: 25, 847: 14, 848: 33, 849: 15, 850: 14, 851: 13, 852: 26, 853: 20, 854: 36, 855: 31, 856: 20, 857: 28, 858: 27, 859: 37, 860: 31,
+  861: 29, 862: 12, 863: 45, 864: 35, 865: 21, 866: 29, 867: 25, 868: 30, 869: 33, 870: 13, 871: 17, 872: 30, 873: 32, 874: 19, 875: 26, 876: 22, 877: 23, 878: 13, 879: 15, 880: 28,
+  881: 29, 882: 22, 883: 18, 884: 26, 885: 33, 886: 34, 887: 19, 888: 19, 889: 25, 890: 30, 891: 36, 892: 37, 893: 20, 894: 10, 895: 38, 896: 22, 897: 34, 898: 48, 899: 25, 900: 25,
+  901: 18, 902: 25, 903: 34, 904: 21, 905: 19, 906: 20, 907: 30, 908: 32, 909: 31, 910: 12, 911: 34, 912: 19, 913: 19, 914: 26, 915: 24, 916: 37, 917: 15, 918: 33, 919: 29, 920: 28,
+  921: 29, 922: 27, 923: 13, 924: 17, 925: 33, 926: 19, 927: 24, 928: 32, 929: 26, 930: 29, 931: 21, 932: 28, 933: 22, 934: 34, 935: 30, 936: 22, 937: 16, 938: 23, 939: 26, 940: 23,
+  941: 14, 942: 24, 943: 20, 944: 48, 945: 24, 946: 36, 947: 16, 948: 21, 949: 27, 950: 28, 951: 20, 952: 12, 953: 15, 954: 33, 955: 23, 956: 21, 957: 45, 958: 30, 959: 23, 960: 22,
+  961: 23, 962: 17, 963: 24, 964: 19, 965: 10, 966: 25, 967: 21, 968: 28, 969: 38, 970: 30, 971: 23, 972: 14, 973: 29, 974: 24, 975: 29, 976: 23, 977: 35, 978: 23, 979: 26, 980: 14,
+  981: 24, 982: 21, 983: 42, 984: 26, 985: 24, 986: 24, 987: 41, 988: 28, 989: 18, 990: 27, 991: 21, 992: 16, 993: 17, 994: 14, 995: 29, 996: 19, 997: 20, 998: 29, 999: 27, 1000: 21,
 };
 
-// 关卡元数据（名字、主题），100 关
-export const LEVELS = [
-  ...HANDMADE.map((h) => ({ name: h.name, Theme: h.Theme })),
-  ...Array.from({ length: 100 - HANDMADE.length }, (_, k) => {
-    const n = HANDMADE.length + 1 + k;
-    // 每个主题 10 个名字，第二轮起加罗马数字后缀，避免重名
-    const round = Math.floor((n - 11) / 30);
-    return { name: NAMES[themeOf(n)][(n - 1) % 10] + ['', ' II', ' III', ' IV'][round], Theme: themeOf(n), Generated: true };
-  }),
-];
+// 关卡元数据（名字、主题）
+const ROMAN = ['', ' II', ' III', ' IV', ' V', ' VI', ' VII', ' VIII', ' IX', ' X'];
+const roman = (k) => (k < 10 ? ROMAN[k] : ` ${k + 1}`);
+export const LEVELS = Array.from({ length: LEVEL_COUNT }, (_, i) => {
+  const n = i + 1;
+  return { name: NAMES[themeOf(n)][(n - 1) % 10] + roman(Math.floor((n - 1) / 30)), Theme: themeOf(n) };
+});
 // 按主题的真实精灵尺寸现算关卡（换皮时传 themeOverride，同一布局用另一套食物的尺寸重算）
 export function buildLevel(idx, themeOverride) {
   const n = idx + 1, meta = LEVELS[idx];
   CUR = themeOverride || meta.Theme;
-  if (idx < HANDMADE.length) {
-    const h = HANDMADE[idx];
-    return { ...meta, Theme: CUR, MoveCount: SHOT_OVERRIDES[n] || h.MoveCount, Table: h.Table, Entities: h.build() };
-  }
-  const { ents, width } = genEntities(n);
-  return { ...meta, Theme: CUR, MoveCount: SHOT_OVERRIDES[n] || shotsFor(n, ents), Table: { w: width }, Entities: ents };
+  const g = genEntities(n);
+  return { ...meta, Theme: CUR, MoveCount: SHOT_OVERRIDES[n] || g.moves, Table: { w: g.width, d: g.depth, round: g.round, rot: g.rotSpeed }, Entities: g.ents };
 }

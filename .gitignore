@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# 小游戏构建生成物（npm install && node build.mjs、tools/make_minigame_assets.py 可重新生成）
+game/minigame/node_modules/
+game/minigame/dist/
+game/minigame/assets_src/
+__pycache__/

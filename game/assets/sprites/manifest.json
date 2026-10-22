@@ -182,5 +182,33 @@
  "wall": {
   "w": 69,
   "h": 512
+ },
+ "kitchen_bouncer": {
+  "w": 475,
+  "h": 512
+ },
+ "drinks_bouncer": {
+  "w": 512,
+  "h": 458
+ },
+ "bakery_bouncer": {
+  "w": 486,
+  "h": 512
+ },
+ "kitchen_pinata": {
+  "w": 490,
+  "h": 512
+ },
+ "drinks_pinata": {
+  "w": 233,
+  "h": 512
+ },
+ "bakery_pinata": {
+  "w": 397,
+  "h": 512
+ },
+ "hammer": {
+  "w": 512,
+  "h": 496
  }
 }
