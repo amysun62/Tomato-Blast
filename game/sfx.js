@@ -20,8 +20,9 @@ const lastPlay = {};
 const R = new URL('assets/sfx_ref/royal/', import.meta.url).href, A = new URL('assets/sfx_ref/angry/', import.meta.url).href;
 // 开炮声和番茄爆汁声是自己合成的（tools/make_fire_sfx.py），游戏和宣传片共用，公开仓库里也有
 const OWN = new URL('assets/sfx/', import.meta.url).href;
+// 值可以是数组：按顺序试，前一个加载失败就用下一个（本机有原作采样先用原作的，公开版退回自制）
 export const SAMPLE_URLS = {
-  fire: OWN + 'fire.wav',
+  fire: [R + 'cannon_blast.mp3', OWN + 'fire.wav'],
   fire_big: OWN + 'fire_big.wav',
   splat: OWN + 'splat.wav',
   splat_big: OWN + 'splat_big.wav',
@@ -48,12 +49,15 @@ export const SAMPLE_URLS = {
 };
 
 export async function loadSamples(map = SAMPLE_URLS) {
-  await Promise.all(Object.entries(map).map(async ([k, url]) => {
-    try {
-      const r = await fetch(url);
-      if (!r.ok) return;
-      buffers[k] = await ctx.decodeAudioData(await r.arrayBuffer());
-    } catch { /* 没有就用合成音 */ }
+  await Promise.all(Object.entries(map).map(async ([k, urls]) => {
+    for (const url of [].concat(urls)) {
+      try {
+        const r = await fetch(url);
+        if (!r.ok) continue;
+        buffers[k] = await ctx.decodeAudioData(await r.arrayBuffer());
+        return;
+      } catch { /* 试下一个，都没有就用合成音 */ }
+    }
   }));
 }
 

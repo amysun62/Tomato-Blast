@@ -1,5 +1,5 @@
 """宣传片音效轨：读录制时记下的音效事件（[秒, 名字, 音量, 音高]），离线合成成 WAV。
-全部是自己合成的声音，不用竞品采样（宣传片要公开）。
+本机有原作采样（assets/sfx_ref）时用采样，否则用自己合成的声音。
 用法：python3 promo_sfx.py events.json out.wav 总秒数
 """
 import json
@@ -164,6 +164,45 @@ def s_click(r):
 
 
 SYNTH = {k[2:]: v for k, v in globals().items() if k.startswith('s_')}
+
+# 本地有原作采样（assets/sfx_ref，只在本机、不进公开仓库）就用采样，和本地游戏里听到的一样；没有就用上面的合成音
+REF = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'sfx_ref')
+SAMPLE_FILES = {
+    'fire': 'royal/cannon_blast.mp3', 'fire_rocket': 'angry/ASM_SFX_Gameplay_Booster_PiercingRocket_Shoot_01.mp3',
+    'hit_wood': 'angry/ASM_SFX_Gameplay_Wood_Hit_01.mp3', 'fall_wood': 'angry/ASM_SFX_Gameplay_Wood_Fall_01.mp3',
+    'hit_tin': 'royal/can_hit.mp3', 'fall_tin': 'angry/ASM_SFX_Gameplay_Tin_Fall_01.mp3',
+    'hit_glass': 'royal/jar_break.mp3', 'hit_ice': 'royal/ice_hit.mp3', 'break_ice': 'royal/ice_break.mp3',
+    'hit_stone': 'royal/stone_hit.mp3', 'fall_stone': 'angry/ASM_SFX_Gameplay_Metal_Fall_01.mp3',
+    'hit_soft': 'royal/pinata_hit.mp3', 'boom': 'royal/tnt_explode.mp3', 'win': 'angry/Game_Won.mp3',
+    'firework': 'royal/welldone_firework.mp3', 'combo': 'royal/streak_moves_hit_ui.mp3', 'coin': 'angry/sfx_ph_CoinCollected.mp3',
+    'big_grow': 'angry/ASM_SFX_Gameplay_Booster_BigCannon_Grow_01.mp3', 'booster_tap': 'angry/ASM_SFX_Gameplay_Booster_Tap_01.mp3',
+}
+
+
+def decode(path):
+    import subprocess
+    raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True).stdout
+    return np.frombuffer(raw, np.float32).astype(np.float64)
+
+
+SAMPLES = {}
+for k, f in SAMPLE_FILES.items():
+    p = os.path.join(REF, f)
+    if os.path.exists(p):
+        SAMPLES[k] = decode(p)
+
+
+def sample_fn(name):
+    if name in SAMPLES:
+        return lambda r: resample(SAMPLES[name], r)
+    if name == 'fire_big' and 'fire' in SAMPLES:
+        return lambda r: mix(resample(SAMPLES['fire'], 0.78 * r), resample(FIRE_BIG, r) * 0.6)   # 大西瓜：原作炮声压低音高 + 自制低频
+    if name == 'fire_tri' and 'fire' in SAMPLES:
+        return lambda r: mix(*[at(resample(SAMPLES['fire'], r * k) * 0.75, d) for d, k in [(0, 1.12), (0.05, 1.0), (0.1, 1.22)]])
+    if name in ('splat', 'splat_big') and 'hit_soft' in SAMPLES:
+        base = SPLAT if name == 'splat' else SPLAT_BIG
+        return lambda r: mix(resample(base, r), resample(SAMPLES['hit_soft'], r * (0.8 if name == 'splat_big' else 1)) * 0.7)
+    return None
 ALIAS = {'fall_wood': 'fall', 'fall_tin': 'fall', 'fall_stone': 'fall', 'break_ice': 'hit_ice', 'big_grow': 'pop', 'booster_tap': 'click', 'firework': 'pop', 'coin': 'pop', 'load': 'click'}
 GAP = 0.035   # 同名音效最短间隔，和游戏里一致
 
@@ -174,8 +213,9 @@ def main():
     out = np.zeros((int(total * SR) + SR, 2))
     last = {}
     for t, name, vol, rate in events:
-        name = ALIAS.get(name, name)
-        fn = SYNTH.get(name, s_hit_soft)
+        fn = sample_fn(name)
+        name = name if fn else ALIAS.get(name, name)
+        fn = fn or SYNTH.get(name, s_hit_soft)
         if name in last and t - last[name] < GAP:
             continue
         last[name] = t
@@ -184,7 +224,7 @@ def main():
         if name.startswith('fire'):
             x *= 1.1   # 开炮声放在最前面
         elif name.startswith(('hit_', 'fall')):
-            x *= 0.55   # 碰撞声几百个，压低一点，让开炮和爆汁更清楚
+            x *= 0.7   # 碰撞声几百个，压低一点，让开炮和爆汁更清楚
         pan = rng.uniform(-0.25, 0.25)
         i = int(t * SR)
         x = x[: max(0, len(out) - i)]

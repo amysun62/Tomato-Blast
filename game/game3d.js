@@ -576,7 +576,7 @@ function fire(target) {
   puff(m, 3, 0.3);   // 炮口离镜头近，烟要小，否则糊住目标
   emit(m, [0xfff7e8, 0xffffff, 0xffd34d], 18, 3, 1.5, 0.35);
   // 开炮声：普通/大西瓜用自制炮声；三连发是三声快速连响；火箭在炮声上叠呼啸
-  if (kind === 'big') sfx.play('fire_big', { vol: 1 });
+  if (kind === 'big') { sfx.play('fire', { vol: 1, rate: 0.78 }); sfx.play('fire_big', { vol: 0.6 }); }   // 炮声压低音高 + 自制低频，更沉
   else if (kind === 'tri') [[0, 1.12], [0.05, 1], [0.1, 1.22]].forEach(([d, r]) => sfx.play('fire', { vol: 0.75, rate: r, delay: d, gap: 0 }));
   else sfx.play('fire', { vol: 1 });
   if (kind === 'rocket') sfx.play('fire_rocket', { vol: 0.8 });
@@ -843,6 +843,7 @@ function step(dt) {
       emit(at, b.big ? [0xff4d6d, 0x2e8b3a, 0xffd0d0] : [0xd8200f, 0xff5a3c, 0xf6c33b], b.big ? 16 : 9, 4, 3, 1.0, 14, true);
       emit(at, [0xe8261a, 0xff7a5a, 0xffffff], b.big ? 60 : 36, 5.5, 3.5, 0.8);
       sfx.play(b.big ? 'splat_big' : 'splat', { vol: b.big ? 1 : 0.8 });
+      sfx.play('hit_soft', { vol: 0.55, rate: b.big ? 0.8 : 1 });   // 叠一层软物命中，汁水感更实
       S.shake = Math.max(S.shake, b.big ? 0.35 : 0.12);
       S.hitstop = Math.max(S.hitstop, b.big ? 0.07 : 0.035);   // 每一下命中都顿一帧，打击感
     }

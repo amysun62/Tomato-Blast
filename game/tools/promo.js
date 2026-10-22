@@ -12,19 +12,29 @@ const load = (src) => new Promise((r) => { const i = new Image(); i.onload = () 
 const clamp01 = (t) => Math.min(1, Math.max(0, t));
 const backOut = (t) => { t = clamp01(t) - 1; return 1 + 2.70158 * t * t * t + 1.70158 * t * t; };
 
-// 剧本：40 秒 / 9 段。caps = [文字, 出现秒, 消失秒, 纵向位置(屏高比例)]；acts = [开炮秒, 目标, 道具]
+// 剧本：40 秒快剪 / 18 段，每段 1.4–2.6 秒、开场 0.3 秒内就开炮。caps = [文字, 出现秒, 消失秒, 纵向位置(屏高比例)]；acts = [开炮秒, 目标, 道具]
+// level 是 0 起算的关卡序号
+const C = 0.27;
+const rapid = (n, gap = 0.5, t0 = 0.2) => Array.from({ length: n }, (_, k) => [t0 + k * gap, k % 3 === 2 ? 'mid' : 'top']);
 const SHOTS = [
-  { dur: 3.5, level: 1, theme: 'kitchen', setup: (o) => { o.dim = 0.2; o.logo = { t0: 0.3, y: 0.36 }; } },
-  { dur: 7, level: 1, theme: 'kitchen', flash: true,
-    caps: [['AIM.', 0.2, 1.6, 0.27], ['BLAST!', 1.7, 3.4, 0.27], ['SPLAT!', 3.6, 6.7, 0.27]],
-    acts: [[0.7, 'top'], [2.3, 'top'], [4.0, 'top'], [5.2, 'top']] },
-  { dur: 6, level: 4, theme: 'drinks', flash: true, caps: [['CHAIN REACTIONS!', 1.0, 5.7, 0.27]], acts: [[0.6, 'boom'], [3.4, 'top']] },
-  { dur: 6.5, level: 8, theme: 'bakery', flash: true, caps: [['POWER-UPS!', 0.3, 6.2, 0.27]], acts: [[0.6, 'mid', 'big'], [3.2, 'top', 'tri']] },
-  { dur: 5.5, level: 12, theme: 'drinks', flash: true, caps: [['PIERCE IT ALL!', 0.9, 5.2, 0.27]], acts: [[0.6, 'low', 'rocket'], [3.0, 'top']] },
-  { dur: 2, level: 5, theme: 'kitchen', flash: true, caps: [['3 KITCHENS', 0.05, 1.95, 0.27]], acts: [[0.45, 'top']] },
-  { dur: 2, level: 5, theme: 'drinks', flash: true, caps: [['100 LEVELS', 0.05, 1.95, 0.27]], acts: [[0.45, 'top']] },
-  { dur: 2, level: 5, theme: 'bakery', flash: true, caps: [['ENDLESS FLAVORS', 0.05, 1.95, 0.27]], acts: [[0.45, 'top']] },
-  { dur: 5.5, level: 9, theme: 'kitchen', flash: true, setup: (o) => { o.dim = 0.5; o.logo = { t0: 0.1, y: 0.33 }; o.cta = { t0: 0.7, y: 0.6 }; o.fadeOutAt = 4.6; } },
+  { dur: 1.6, level: 1, theme: 'kitchen', setup: (o) => { o.logo = { t0: 0, y: 0.3 }; }, acts: [[0.5, 'top']] },
+  { dur: 2.4, level: 2, theme: 'kitchen', flash: true, caps: [['AIM!', 0, 0.8, C], ['FIRE!', 0.8, 1.6, C], ['SMASH!', 1.6, 2.4, C]], acts: [[0.25, 'top'], [0.9, 'top'], [1.6, 'mid']] },
+  { dur: 2.2, level: 3, theme: 'bakery', flash: true, caps: [['SPLAT!', 0.2, 2.1, C]], acts: [[0.2, 'top'], [1.1, 'mid']] },
+  { dur: 2.6, level: 4, theme: 'drinks', flash: true, caps: [['BOOM!', 0.45, 2.5, C]], acts: [[0.25, 'boom'], [1.5, 'top']] },
+  { dur: 2.4, level: 8, theme: 'bakery', flash: true, caps: [['TRIPLE SHOT!', 0.1, 2.3, C]], acts: [[0.3, 'top', 'tri'], [1.4, 'top']] },
+  { dur: 2.6, level: 7, theme: 'kitchen', flash: true, caps: [['MELON BOMB!', 0.1, 2.5, C]], acts: [[0.3, 'mid', 'big'], [1.6, 'top']] },
+  { dur: 2.4, level: 12, theme: 'drinks', flash: true, caps: [['ROCKET!', 0.1, 2.3, C]], acts: [[0.3, 'low', 'rocket'], [1.4, 'top']] },
+  { dur: 2.2, level: 13, theme: 'kitchen', flash: true, caps: [['COMBO!', 0.6, 2.1, C]], acts: rapid(3, 0.6) },
+  { dur: 1.4, level: 5, theme: 'kitchen', flash: true, caps: [['3 KITCHENS', 0, 1.35, C]], acts: [[0.3, 'top']] },
+  { dur: 1.4, level: 5, theme: 'drinks', flash: true, caps: [['100 LEVELS', 0, 1.35, C]], acts: [[0.3, 'top']] },
+  { dur: 1.4, level: 5, theme: 'bakery', flash: true, caps: [['ENDLESS FUN', 0, 1.35, C]], acts: [[0.3, 'top']] },
+  { dur: 2.4, level: 18, theme: 'drinks', flash: true, caps: [['HARD LEVELS!', 0.1, 2.3, C]], acts: rapid(3, 0.65, 0.25) },
+  { dur: 2.2, level: 28, theme: 'bakery', flash: true, caps: [['CAN YOU CLEAR IT?', 0.1, 2.1, C]], acts: rapid(3, 0.6) },
+  { dur: 2.4, level: 30, theme: 'kitchen', flash: true, acts: rapid(4, 0.5) },
+  { dur: 1.8, level: 23, theme: 'bakery', flash: true, acts: rapid(3, 0.5) },
+  { dur: 1.8, level: 45, theme: 'drinks', flash: true, acts: rapid(3, 0.5) },
+  { dur: 1.8, level: 35, theme: 'kitchen', flash: true, caps: [['SO SATISFYING!', 0.05, 1.75, C]], acts: rapid(3, 0.5) },
+  { dur: 5.0, level: 9, theme: 'kitchen', flash: true, acts: [[0.2, 'top']], setup: (o) => { o.dim = 0.45; o.logo = { t0: 0.5, y: 0.33 }; o.cta = { t0: 1.0, y: 0.6 }; o.fadeOutAt = 4.2; } },
 ];
 
 let IMG = {};
@@ -39,6 +49,8 @@ function drawCaption(ctx, W, H, text, age, dur, y) {
   ctx.rotate(-0.035);
   ctx.scale(s, s);
   ctx.font = `${size}px "Lilita One"`;
+  const fit = Math.min(1, (W * 0.88) / (ctx.measureText(text).width + size * 0.26));   // 长字幕缩到屏宽 88% 以内
+  ctx.scale(fit, fit);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
   ctx.lineWidth = size * 0.26; ctx.strokeStyle = '#8e150c';
   ctx.shadowColor = 'rgba(40,10,0,.45)'; ctx.shadowOffsetY = size * 0.1; ctx.shadowBlur = size * 0.15;
