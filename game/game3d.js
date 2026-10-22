@@ -421,12 +421,17 @@ function layout() {
   L.w = Math.min(VW * 0.42, VH * 0.2);
   L.h = tex ? L.w * tex.image.height / tex.image.width : L.w;
   L.x = VW / 2; L.y = VH + L.h * 0.15;   // 胖炮身占屏宽四成，底下 15% 出屏；道具按钮分在炮的两侧
-  // 半圆炮台横跨整个屏幕底边，炮坐在上面
+  // 旋转底盘（学原版）：同心环带圆台，圆心正对炮的底座，整台炮落在内圈里，屏幕上只露出向上拱的几道弧
   const st = TEX.launcher_stage;
   if (st) {
-    const sw = VW * 1.04, sh = sw * st.image.height / st.image.width;
+    const sw = VW * 1.5, sh = sw * st.image.height / st.image.width;
     uiStage.scale.set(sw, sh, 1);
-    uiStage.position.set(VW / 2, -(VH + sh * 0.18), 1);
+    const cy = VH - L.h * 0.08;   // 圆心（盘面中心）的屏幕位置，就在炮底座上
+    uiStage.position.set(VW / 2, -cy, 1);
+    // 道具栏抬到圆弧上方：按盘面椭圆算按钮所在 x 处的弧高（盘面半宽≈图宽 0.49，半高≈图高 0.42）
+    const a = sw * 0.49, b = sh * 0.42, dx = VW / 2 - 44;
+    const arcY = cy - b * Math.sqrt(Math.max(0, 1 - (dx / a) ** 2));
+    document.documentElement.style.setProperty('--bar-lift', `${Math.max(0, VH - arcY + 4)}px`);
   }
   // 碗口对应的世界坐标：沿屏幕上碗口那一点的视线，取镜头前 D*0.42 处
   const mouthY = L.y - L.h * (1 - MOUTH_FY);
@@ -438,7 +443,7 @@ function layout() {
 
 // 叠加层精灵（屏幕像素坐标，y 向下取负）
 const uiStage = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
-uiStage.center.set(0.5, 0);
+uiStage.center.set(0.5, 0.56);   // 锚点在盘面中心（图里盘面中心离底边约 56%）
 uiStage.renderOrder = 1;
 ui.add(uiStage);
 const uiLauncher = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false }));
@@ -570,7 +575,11 @@ function fire(target) {
   rig.punch = kind === 'big' ? 1.6 : 1;   // 镜头被后坐力往后顶一下再回弹（单方向，不乱抖）
   puff(m, 3, 0.3);   // 炮口离镜头近，烟要小，否则糊住目标
   emit(m, [0xfff7e8, 0xffffff, 0xffd34d], 18, 3, 1.5, 0.35);
-  sfx.play(kind === 'rocket' ? 'fire_rocket' : kind === 'tri' ? 'fire_tri' : 'fire', { rate: kind === 'big' ? 0.75 : 1, vol: kind === 'big' ? 1 : 0.85 });
+  // 开炮声：普通/大西瓜用自制炮声；三连发是三声快速连响；火箭在炮声上叠呼啸
+  if (kind === 'big') sfx.play('fire_big', { vol: 1 });
+  else if (kind === 'tri') [[0, 1.12], [0.05, 1], [0.1, 1.22]].forEach(([d, r]) => sfx.play('fire', { vol: 0.75, rate: r, delay: d, gap: 0 }));
+  else sfx.play('fire', { vol: 1 });
+  if (kind === 'rocket') sfx.play('fire_rocket', { vol: 0.8 });
   updateHud();
 }
 
@@ -833,7 +842,7 @@ function step(dt) {
       splats.push({ s, born: S.time, size: b.big ? 1.9 : 1.1 });
       emit(at, b.big ? [0xff4d6d, 0x2e8b3a, 0xffd0d0] : [0xd8200f, 0xff5a3c, 0xf6c33b], b.big ? 16 : 9, 4, 3, 1.0, 14, true);
       emit(at, [0xe8261a, 0xff7a5a, 0xffffff], b.big ? 60 : 36, 5.5, 3.5, 0.8);
-      sfx.play('splat', { vol: b.big ? 1 : 0.7, rate: b.big ? 0.7 : 1 });
+      sfx.play(b.big ? 'splat_big' : 'splat', { vol: b.big ? 1 : 0.8 });
       S.shake = Math.max(S.shake, b.big ? 0.35 : 0.12);
       S.hitstop = Math.max(S.hitstop, b.big ? 0.07 : 0.035);   // 每一下命中都顿一帧，打击感
     }

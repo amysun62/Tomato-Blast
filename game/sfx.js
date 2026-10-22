@@ -18,9 +18,13 @@ const lastPlay = {};
 // 逻辑音效名 → 采样文件（相对 index.html）。原作采样只限本地学习，发布前全部换掉
 // 路径相对本模块解析：根目录 2D 版和 v3d/ 归档版都能用
 const R = new URL('assets/sfx_ref/royal/', import.meta.url).href, A = new URL('assets/sfx_ref/angry/', import.meta.url).href;
+// 开炮声和番茄爆汁声是自己合成的（tools/make_fire_sfx.py），游戏和宣传片共用，公开仓库里也有
+const OWN = new URL('assets/sfx/', import.meta.url).href;
 export const SAMPLE_URLS = {
-  fire: R + 'cannon_blast.mp3',
-  fire_tri: A + 'ASM_SFX_Gameplay_Booster_WideShot_Shoot_01.mp3',
+  fire: OWN + 'fire.wav',
+  fire_big: OWN + 'fire_big.wav',
+  splat: OWN + 'splat.wav',
+  splat_big: OWN + 'splat_big.wav',
   fire_rocket: A + 'ASM_SFX_Gameplay_Booster_PiercingRocket_Shoot_01.mp3',
   big_grow: A + 'ASM_SFX_Gameplay_Booster_BigCannon_Grow_01.mp3',
   booster_tap: A + 'ASM_SFX_Gameplay_Booster_Tap_01.mp3',
@@ -109,10 +113,10 @@ const SYNTH = {
 let onPlay = null;
 export function setPlayHook(fn) { onPlay = fn; }
 
-export function play(name, { vol = 1, rate = 1, jitter = 0.06, gap = 0.035 } = {}) {
-  if (onPlay) onPlay(name, vol, rate);
+export function play(name, { vol = 1, rate = 1, jitter = 0.06, gap = 0.035, delay = 0 } = {}) {
+  if (onPlay) onPlay(name, vol, rate, delay);
   if (muted || ctx.state !== 'running') return;
-  const t = ctx.currentTime;
+  const t = ctx.currentTime + delay;
   if (lastPlay[name] != null && t - lastPlay[name] < gap) return;
   lastPlay[name] = t;
   const r = rate * (1 + (Math.random() * 2 - 1) * jitter);
@@ -124,7 +128,7 @@ export function play(name, { vol = 1, rate = 1, jitter = 0.06, gap = 0.035 } = {
     const g = ctx.createGain();
     g.gain.value = vol;
     s.connect(g).connect(sfxBus);
-    s.start();
+    s.start(t);
     return;
   }
   (SYNTH[name] || SYNTH.hit_soft)(Math.min(1, vol), r, t);

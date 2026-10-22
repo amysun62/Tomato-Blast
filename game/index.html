@@ -79,7 +79,8 @@
   }
 
   /* ---------- 底部道具栏：白色气泡 c_bubble + 绿色角标 c_badge，整排居中等距 ---------- */
-  #bar { position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--bar-h) + env(safe-area-inset-bottom)); padding: 0 14px calc(env(safe-area-inset-bottom) + 12px);
+  /* 道具栏抬到底盘圆弧上方（--bar-lift 由 game3d.js 按底盘实际位置算），不压炮和底盘 */
+  #bar { position: fixed; left: 0; right: 0; bottom: var(--bar-lift, 0px); height: calc(var(--bar-h) + env(safe-area-inset-bottom)); padding: 0 14px calc(env(safe-area-inset-bottom) + 12px);
     display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; pointer-events: none; }
   #bar .cannon-gap { flex: 0 0 min(42vw, 20vh); }   /* 中间留给大炮：道具左二右一 */
   #bar .side { display: flex; gap: 8px; align-items: flex-end; flex: 1; }

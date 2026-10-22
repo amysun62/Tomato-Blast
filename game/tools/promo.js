@@ -107,7 +107,7 @@ export async function prepare() {
   IMG = { logo: await load('assets/ui/logo.png'), btn: await load('assets/ui/c_btn_green.png') };
   R.invBefore = { ...G.inv };
   window.__promoSfx = [];
-  sfx.setPlayHook((name, vol, rate) => window.__promoSfx.push([+(R.i / FPS).toFixed(3), name, +vol.toFixed(2), +rate.toFixed(2)]));
+  sfx.setPlayHook((name, vol, rate, delay = 0) => window.__promoSfx.push([+(R.i / FPS + delay).toFixed(3), name, +vol.toFixed(2), +rate.toFixed(2)]));
   Object.assign(R, { shot: -1, f: 0, n: 0, i: 0 });
   return SHOTS.reduce((s, x) => s + Math.round(x.dur * FPS), 0);
 }

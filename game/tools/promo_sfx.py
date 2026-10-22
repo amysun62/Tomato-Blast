@@ -3,6 +3,7 @@
 用法：python3 promo_sfx.py events.json out.wav 总秒数
 """
 import json
+import os
 import sys
 import wave
 
@@ -71,21 +72,35 @@ def at(x, delay):
     return np.concatenate([np.zeros(int(delay * SR)), x])
 
 
-# 开炮是宣传片的主角：低频"咚"的冲击 + 炸裂噪声 + 气流呼啸，三层叠
+# 开炮声直接用游戏里的同一个文件（tools/make_fire_sfx.py 合成），保证宣传片和游戏听起来一样
+SFX_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'sfx')
+
+
+def load_wav(name):
+    with wave.open(os.path.join(SFX_DIR, name)) as w:
+        return np.frombuffer(w.readframes(w.getnframes()), '<i2').astype(np.float64) / 32767
+
+
+FIRE, FIRE_BIG = load_wav('fire.wav'), load_wav('fire_big.wav')
+SPLAT, SPLAT_BIG = load_wav('splat.wav'), load_wav('splat_big.wav')
+
+
+def resample(x, r):
+    # 播放速率 r：r>1 音高变高、变短（和 WebAudio 的 playbackRate 一样）
+    idx = np.arange(0, len(x) - 1, r)
+    return np.interp(idx, np.arange(len(x)), x)
+
+
 def s_fire(r):
-    thump = tone(150 * r, 38, 0.32, 1.0)
-    crack = nz(0.09, 0.8, lo=900, hi=7000)
-    body = nz(0.35, 0.55, hi=1800 * r, f_end=250)
-    whoosh = at(nz(0.45, 0.28, lo=500, hi=3000, f_end=700, a=0.06), 0.03)
-    return mix(thump, crack, body, whoosh)
+    return resample(FIRE, r)
 
 
 def s_fire_big(r):
-    return mix(tone(95 * r, 28, 0.5, 1.0), nz(0.12, 0.8, lo=600, hi=5000), nz(0.55, 0.7, hi=1200, f_end=160), at(nz(0.6, 0.3, lo=300, hi=2000, f_end=400, a=0.08), 0.04))
+    return resample(FIRE_BIG, r)
 
 
 def s_fire_tri(r):
-    return mix(*[at(s_fire(r * (1 + k * 0.12)) * 0.7, k * 0.045) for k in range(3)])
+    return mix(*[at(s_fire(r * k) * 0.75, d) for d, k in [(0, 1.12), (0.05, 1.0), (0.1, 1.22)]])
 
 
 def s_fire_rocket(r):
@@ -93,7 +108,11 @@ def s_fire_rocket(r):
 
 
 def s_splat(r):
-    return mix(nz(0.2, 0.85, hi=2600 * r, f_end=260), tone(190 * r, 65, 0.12, 0.45), at(nz(0.08, 0.3, lo=1500, hi=6000), 0.01))
+    return resample(SPLAT, r)
+
+
+def s_splat_big(r):
+    return resample(SPLAT_BIG, r)
 
 
 def s_hit_wood(r):
@@ -156,8 +175,6 @@ def main():
     last = {}
     for t, name, vol, rate in events:
         name = ALIAS.get(name, name)
-        if name == 'fire' and rate < 0.9:
-            name = 'fire_big'
         fn = SYNTH.get(name, s_hit_soft)
         if name in last and t - last[name] < GAP:
             continue
@@ -165,7 +182,9 @@ def main():
         r = rate * (1 + rng.uniform(-0.05, 0.05))
         x = fn(r) * min(1.0, vol)
         if name.startswith('fire'):
-            x *= 1.25   # 开炮声放在最前面
+            x *= 1.1   # 开炮声放在最前面
+        elif name.startswith(('hit_', 'fall')):
+            x *= 0.55   # 碰撞声几百个，压低一点，让开炮和爆汁更清楚
         pan = rng.uniform(-0.25, 0.25)
         i = int(t * SR)
         x = x[: max(0, len(out) - i)]
